@@ -4,7 +4,7 @@ from django.db import models
 
 
 # product heirarchy
-class Field(models.Model):
+class Fields(models.Model):
     name    = models.CharField(max_length=45)
 
     def __str__(self):
@@ -13,9 +13,9 @@ class Field(models.Model):
     class Meta():
         db_table = 'fields'
 
-class Category(models.Model):
+class Categories(models.Model):
     name    = models.CharField(max_length=45)
-    field   = models.ForeignKey(Field, on_delete=models.CASCADE)
+    field   = models.ForeignKey(Fields, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -23,9 +23,9 @@ class Category(models.Model):
     class Meta():
         db_table = 'categories'
 
-class Group(models.Model):
+class Groups(models.Model):
     name       = models.CharField(max_length=45)
-    category   = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category   = models.ForeignKey(Categories, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -33,9 +33,9 @@ class Group(models.Model):
     class Meta():
         db_table = 'groups'
 
-class Product(models.Model):
+class Products(models.Model):
     name       = models.CharField(max_length=45)
-    group      = models.ForeignKey(Group, on_delete=models.CASCADE)
+    group      = models.ForeignKey(Groups, on_delete=models.CASCADE)
     price      = models.IntegerField()
     origin     = models.CharField(max_length=45)
     company    = models.CharField(max_length=45)
@@ -51,10 +51,10 @@ class Product(models.Model):
         db_table = 'products'
 
 
-# product detail/option
+# product detail/optiondjango
 
-class ProductOption(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+class ProductOptions(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
     description = models.CharField(max_length=50)
     stock = models.IntegerField()
     plus_price = models.IntegerField(null=True)
@@ -65,8 +65,8 @@ class ProductOption(models.Model):
     class Meta:
         db_table = 'product_options'
 
-class ProdcutImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+class ProdcutImages(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
     image_url = models.CharField(max_length=500)
 
     def __str__(self):
@@ -76,7 +76,7 @@ class ProdcutImage(models.Model):
         db_table = 'product_images'
 
 
-class Attribute(models.Model):
+class Attributes(models.Model):
     description = models.CharField(max_length=45)
 
     def __str__(self):
@@ -85,9 +85,9 @@ class Attribute(models.Model):
     class Meta:
         db_table = 'attributes'
 
-class ProductAttribute(models.Model):
-    product   = models.ForeignKey(Product, on_delete=models.CASCADE)
-    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+class ProductAttributes(models.Model):
+    product   = models.ForeignKey(Products, on_delete=models.CASCADE)
+    attribute = models.ForeignKey(Attributes, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -95,7 +95,7 @@ class ProductAttribute(models.Model):
     class Meta:
         db_table = 'product_attributes'
 
-class Color(models.Model):
+class Colors(models.Model):
     color = models.CharField(max_length=45)
 
     def __str__(self):
@@ -104,7 +104,7 @@ class Color(models.Model):
     class Meta:
         db_table = 'colors'
 
-class Thickness(models.Model):
+class Thicknesses(models.Model):
     thickness = models.CharField(max_length=45)
 
     def __str__(self):
@@ -113,9 +113,9 @@ class Thickness(models.Model):
     class Meta:
         db_table = 'thicknesses'
 
-class BodyColor(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Color, on_delete=models.CASCADE)
+class BodyColors(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    color   = models.ForeignKey(Colors, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -123,9 +123,9 @@ class BodyColor(models.Model):
     class Meta:
         db_table = 'body_colors'
 
-class InkColor(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Color, on_delete=models.CASCADE)
+class InkColors(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    color   = models.ForeignKey(Colors, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -133,9 +133,9 @@ class InkColor(models.Model):
     class Meta:
         db_table = 'ink_colors'
 
-class ProductThickness(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Thickness, on_delete=models.CASCADE)
+class ProductThicknesses(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    color   = models.ForeignKey(Thicknesses, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
