@@ -39,7 +39,7 @@ class Product(models.Model):
     price        = models.IntegerField()
     origin       = models.CharField(max_length=45)
     company      = models.CharField(max_length=45)
-    created_at    = models.DateField(auto_now=False)
+    created_at   = models.DateField(auto_now=False)
     updated_at   = models.DateField(auto_now=False, null=True, blank=True)
     description  = models.TextField(null=True)
     sales_amount = models.IntegerField(null=True)
@@ -81,14 +81,14 @@ class Color(models.Model):
 
 class BodyColor(models.Model):  # middle table
     product_optiuon = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    color          = models.ForeignKey(Color, on_delete=models.CASCADE)
+    color           = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'body_colors'
 
 class InkColor(models.Model):  # middle table
     product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Color, on_delete=models.CASCADE)
+    color          = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'ink_colors'
@@ -107,7 +107,7 @@ class Thickness(models.Model):
 
 class ProductThicknesses(models.Model):  # middle table
     product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    thickness  = models.ForeignKey(Thickness, on_delete=models.CASCADE)
+    thickness      = models.ForeignKey(Thickness, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'product_thicknesses'
