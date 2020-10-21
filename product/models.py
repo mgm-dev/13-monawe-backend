@@ -2,7 +2,6 @@ from django.db import models
 
 # autopep8: off
 
-
 # product heirarchy
 class Field(models.Model):
     name    = models.CharField(max_length=45)
@@ -58,7 +57,7 @@ class ProductImage(models.Model):
         db_table = 'product_images'
 
 
-## product detail/option
+# product detail/option
 
 class ProductOption(models.Model):
     product     = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -88,7 +87,7 @@ class BodyColor(models.Model):  # middle table
 
 class InkColor(models.Model):  # middle table
     product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Color, on_delete=models.CASCADE)
+    color          = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'ink_colors'
@@ -107,12 +106,12 @@ class Thickness(models.Model):
 
 class ProductThicknesses(models.Model):  # middle table
     product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    thickness  = models.ForeignKey(Thickness, on_delete=models.CASCADE)
+    thickness      = models.ForeignKey(Thickness, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'product_thicknesses'
 
-#product tags
+# product tags
 
 class Tag(models.Model):
     name = models.CharField(max_length=45)
