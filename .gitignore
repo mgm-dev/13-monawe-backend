@@ -154,3 +154,7 @@ dmypy.json
 
 my_settings.py
 *.csv
+/csv_data
+user_csv.py
+product_csv.py
+product_option_csv.py
