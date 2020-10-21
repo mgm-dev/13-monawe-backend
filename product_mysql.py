@@ -6,33 +6,42 @@ import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "monawe.settings")
 django.setup()
 
-from product.models import Fields, Categories, Groups, Products
+from product.models import Field, Category, Subcategory, Product
 
-CSV_PATH_FIELD = 'csv_data/field.csv'
-CSV_PATH_CATEGORY = 'csv_data/category.csv'
-CSV_PATH_GROUP = 'csv_data/group.csv'
-CSV_PATH_PRODUCT = 'csv_data/product.csv'
+CSV_PATH_FIELDS = 'csv_data/field.csv'
+CSV_PATH_CATEGORIES = 'csv_data/category.csv'
+CSV_PATH_SUBCATEGORIES = 'csv_data/subcategory.csv'
+CSV_PATH_PRODUCTS = 'csv_data/product.csv'
 
-with open(CSV_PATH_FIELD) as in_file:
+with open(CSV_PATH_FIELDS) as in_file:
     data_reader = csv.reader(in_file)
     next(data_reader, None)
     for row in data_reader:
-        Fields.objects.create(name = row[0])
+        Field.objects.create(name = row[0])
 
-with open(CSV_PATH_CATEGORY) as in_file:
+with open(CSV_PATH_CATEGORIES) as in_file:
     data_reader = csv.reader(in_file)
     next(data_reader, None)
     for row in data_reader:
-        Categories.objects.create(name = row[1], field = row[0])
+        Category.objects.create(name = row[1], field_id = row[0])
 
-with open(CSV_PATH_GROUP) as in_file:
+with open(CSV_PATH_SUBCATEGORIES) as in_file:
     data_reader = csv.reader(in_file)
     next(data_reader, None)
     for row in data_reader:
-        Groups.objects.create(name = row[1], category = row[0])
+        Subcategory.objects.create(name = row[1], category_id = row[0])
 
-with open(CSV_PATH_PRODUCT) as in_file:
+with open(CSV_PATH_PRODUCTS) as in_file:
     data_reader = csv.reader(in_file)
     next(data_reader, None)
     for row in data_reader:
-        Products.objects.create(name = row[1], group = row[0], price = row[2], origin = row[3], company = [4], stock =[5], date = [6] attribute = [7], gift = [8])
+        Product.objects.create(
+            name            = row[1],
+            subcategory_id  = row[0],
+            price           = row[2],
+            origin          = row[3],
+            company         = row[4],
+            created_at      = row[5],
+            updated_at      = row[6],
+            description     = row[7],
+            sales_amount    = row[8])
