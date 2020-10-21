@@ -5,11 +5,11 @@ from product.models import Product, ProductOption
 # autopep8: off
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
-    post_number = models.IntegerField()
+    user          = models.ForeignKey(User, on_delete=models.CASCADE)
+    address       = models.ForeignKey(Address, on_delete=models.CASCADE)
+    post_number   = models.IntegerField()
     order_request = models.CharField(max_length=45)
-    date = models.DateTimeField(auto_now=True)
+    date          = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -27,7 +27,7 @@ class Status(models.Model):
         db_table = 'statuses'
 
 class OrderStatus(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order  = models.ForeignKey(Order, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -37,9 +37,9 @@ class OrderStatus(models.Model):
         db_table = 'order_statuses'
 
 class OrderProduct(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
+    order           = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product         = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_option  = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
     product_ammount = models.IntegerField()
 
     def __str__(self):
@@ -60,14 +60,14 @@ class DeliveryInfo(models.Model):
         db_table = 'delivery_infos'
 
 class ProductReview(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    rating = models.DecimalField(max_digits=1, decimal_places=1)
-    title = models.CharField(max_length=45)
-    content = models.CharField(max_length=200)
+    user       = models.ForeignKey(User, on_delete=models.CASCADE)
+    product    = models.ForeignKey(Product, on_delete=models.CASCADE)
+    rating     = models.DecimalField(max_digits=1, decimal_places=1)
+    title      = models.CharField(max_length=45)
+    content    = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
     updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
-    image_url = models.URLField(max_length=200)
+    image_url  = models.URLField(max_length=200)
 
     def __str__(self):
         return self.name
@@ -77,7 +77,7 @@ class ProductReview(models.Model):
 
 
 class WishProduct(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user    = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -87,7 +87,7 @@ class WishProduct(models.Model):
         db_table = 'wish_products'
 
 class ViewedProduct(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user    = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
