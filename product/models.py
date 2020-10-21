@@ -112,7 +112,7 @@ class ProductOption(models.Model):
     ink_color   = models.ForeignKey(InkColor, on_delete=models.CASCADE, null=True)
     thickness   = models.ForeignKey(Thickness, on_delete=models.CASCADE, null=True)
     stock       = models.IntegerField(null=True)
-    plus_price  = models.DecimalField(max_digits=10, decimal_places=2, , null=True)
+    plus_price  = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
     class Meta:
         db_table = 'product_options'
