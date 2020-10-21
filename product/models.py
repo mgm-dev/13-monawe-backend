@@ -104,7 +104,7 @@ class Thickness(models.Model):
         db_table = 'thicknesses'
 
 
-class ProductThicknesses(models.Model):  # middle table
+class ProductThickness(models.Model):  # middle table
     product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
     thickness      = models.ForeignKey(Thickness, on_delete=models.CASCADE)
 

@@ -154,5 +154,6 @@ dmypy.json
 
 my_settings.py
 product_mysql.py
+product_option_mysql.py
 *.csv
 /csv_data
