@@ -39,11 +39,7 @@ class Product(models.Model):
     origin       = models.CharField(max_length=45)
     company      = models.CharField(max_length=45)
     created_at   = models.DateField(auto_now=False)
-<<<<<<< HEAD
-    updated_at   = models.DateField(auto_now=False, null=True, blank=True)
-=======
     updated_at   = models.DateField(auto_now=False)
->>>>>>> feature/product
     description  = models.TextField(null=True)
     sales_amount = models.IntegerField(null=True)
 
@@ -60,20 +56,6 @@ class ProductImage(models.Model):
     class Meta():
         db_table = 'product_images'
 
-<<<<<<< HEAD
-
-# product detail/option
-
-class ProductOption(models.Model):
-    product     = models.ForeignKey(Product, on_delete=models.CASCADE)
-    stock       = models.IntegerField(null=True)
-    plus_price  = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-
-    class Meta:
-        db_table = 'product_options'
-
-=======
->>>>>>> feature/product
 # product colors
 
 class Color(models.Model):
@@ -85,23 +67,6 @@ class Color(models.Model):
     class Meta:
         db_table = 'colors'
 
-<<<<<<< HEAD
-class BodyColor(models.Model):  # middle table
-    product_optiuon = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    color           = models.ForeignKey(Color, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'body_colors'
-
-class InkColor(models.Model):  # middle table
-    product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    color          = models.ForeignKey(Color, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'ink_colors'
-
-=======
->>>>>>> feature/product
 # product thickness
 
 class Thickness(models.Model):
@@ -115,11 +80,6 @@ class Thickness(models.Model):
 
 # product detail/option
 
-<<<<<<< HEAD
-class ProductThicknesses(models.Model):  # middle table
-    product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    thickness      = models.ForeignKey(Thickness, on_delete=models.CASCADE)
-=======
 class ProductOption(models.Model):
     product     = models.ForeignKey(Product, on_delete=models.CASCADE)
     body_color  = models.ForeignKey(Color, related_name ="body_color", on_delete=models.CASCADE, null=True)
@@ -128,7 +88,6 @@ class ProductOption(models.Model):
     stock       = models.IntegerField(null=True)
     plus_price  = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     etc_option  = models.CharField(max_length=50, null=True)
->>>>>>> feature/product
 
     class Meta:
         db_table = 'product_options'
