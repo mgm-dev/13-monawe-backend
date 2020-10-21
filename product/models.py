@@ -40,9 +40,9 @@ class Product(models.Model):
     origin       = models.CharField(max_length=45)
     company      = models.CharField(max_length=45)
     create_at    = models.DateField(auto_now=False)
-    updated_at   = models.DateField(auto_now=False, null=True)
+    updated_at   = models.DateField(auto_now=False, null=True, blank=True)
     description  = models.TextField(null=True)
-    sales_amount = models.IntegerField()
+    sales_amount = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
@@ -50,7 +50,7 @@ class Product(models.Model):
     class Meta():
         db_table = 'products'
 
-class ProdcutImage(models.Model):
+class ProductImage(models.Model):
     product     = models.ForeignKey(Product, on_delete=models.CASCADE)
     image_url   = models.CharField(max_length=500)
 
@@ -108,11 +108,11 @@ class ProductThicknesses(models.Model):  # middle table
 
 class ProductOption(models.Model):
     product     = models.ForeignKey(Product, on_delete=models.CASCADE)
-    body_color  = models.ForeignKey(BodyColor, on_delete=models.CASCADE)
-    ink_color   = models.ForeignKey(InkColor, on_delete=models.CASCADE)
-    thickness   = models.ForeignKey(Thickness, on_delete=models.CASCADE)
-    stock       = models.IntegerField()
-    plus_price  = models.DecimalField(max_digits=10, decimal_places=2)
+    body_color  = models.ForeignKey(BodyColor, on_delete=models.CASCADE, null=True)
+    ink_color   = models.ForeignKey(InkColor, on_delete=models.CASCADE, null=True)
+    thickness   = models.ForeignKey(Thickness, on_delete=models.CASCADE, null=True)
+    stock       = models.IntegerField(null=True)
+    plus_price  = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
     class Meta:
         db_table = 'product_options'
@@ -128,7 +128,7 @@ class Tag(models.Model):
     class Meta:
         db_table = 'tags'
 
-class ProductAttributes(models.Model):  # middle table
+class ProductTag(models.Model):  # middle table
     product   = models.ForeignKey(Product, on_delete=models.CASCADE)
     tag       = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
