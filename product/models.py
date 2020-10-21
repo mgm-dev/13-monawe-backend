@@ -39,8 +39,8 @@ class Product(models.Model):
     price        = models.IntegerField()
     origin       = models.CharField(max_length=45)
     company      = models.CharField(max_length=45)
-    create_at    = models.DateField(auto_now=False)
-    updated_at   = models.DateField(auto_now=False, null=True, blank=True)
+    created_at   = models.DateField(auto_now=False)
+    updated_at   = models.DateField(auto_now=False)
     description  = models.TextField(null=True)
     sales_amount = models.IntegerField(null=True)
 
@@ -129,7 +129,3 @@ class ProductTag(models.Model):  # middle table
 
     class Meta:
         db_table = 'product_tags'
-
-
-
-

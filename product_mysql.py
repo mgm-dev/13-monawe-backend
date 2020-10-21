@@ -2,16 +2,17 @@ import os
 import django
 import csv
 import sys
+import dateutil.parser
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "monawe.settings")
 django.setup()
 
 from product.models import Field, Category, Subcategory, Product
 
-CSV_PATH_FIELDS = 'csv_data/field.csv'
-CSV_PATH_CATEGORIES = 'csv_data/category.csv'
-CSV_PATH_SUBCATEGORIES = 'csv_data/subcategory.csv'
-CSV_PATH_PRODUCTS = 'csv_data/product.csv'
+CSV_PATH_FIELDS = 'csv_data/fields.csv'
+CSV_PATH_CATEGORIES = 'csv_data/categories.csv'
+CSV_PATH_SUBCATEGORIES = 'csv_data/subcategories.csv'
+CSV_PATH_PRODUCTS = 'csv_data/products.csv'
 
 with open(CSV_PATH_FIELDS) as in_file:
     data_reader = csv.reader(in_file)
@@ -41,7 +42,7 @@ with open(CSV_PATH_PRODUCTS) as in_file:
             price           = row[2],
             origin          = row[3],
             company         = row[4],
-            created_at      = row[5],
-            updated_at      = row[6],
+            created_at      = dateutil.parser.parse(row[5]),
+            updated_at      = dateutil.parser.parse(row[6]),
             description     = row[7],
             sales_amount    = row[8])
