@@ -4,7 +4,7 @@ from django.db import models
 
 
 # product heirarchy
-class Fields(models.Model):
+class Field(models.Model):
     name    = models.CharField(max_length=45)
 
     def __str__(self):
@@ -13,9 +13,9 @@ class Fields(models.Model):
     class Meta():
         db_table = 'fields'
 
-class Categories(models.Model):
+class Category(models.Model):
     name    = models.CharField(max_length=45)
-    field   = models.ForeignKey(Fields, on_delete=models.CASCADE)
+    field   = models.ForeignKey(Field, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -23,26 +23,26 @@ class Categories(models.Model):
     class Meta():
         db_table = 'categories'
 
-class Groups(models.Model):
+class Subcategory(models.Model):
     name       = models.CharField(max_length=45)
-    category   = models.ForeignKey(Categories, on_delete=models.CASCADE)
+    category   = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
     class Meta():
-        db_table = 'groups'
+        db_table = 'subcategories'
 
-class Products(models.Model):
-    name       = models.CharField(max_length=45)
-    group      = models.ForeignKey(Groups, on_delete=models.CASCADE)
-    price      = models.IntegerField()
-    origin     = models.CharField(max_length=45)
-    company    = models.CharField(max_length=45)
-    stock      = models.IntegerField(null=True)
-    date       = models.DateField(auto_now=False)
-    attribute  = models.TextField(null=True)
-    gift       = models.BooleanField()
+class Product(models.Model):
+    name         = models.CharField(max_length=45)
+    subcategory  = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
+    price        = models.IntegerField()
+    origin       = models.CharField(max_length=45)
+    company      = models.CharField(max_length=45)
+    create_at    = models.DateField(auto_now=False)
+    updated_at   = models.DateField(auto_now=False, null=True)
+    description  = models.TextField(null=True)
+    sales_amount = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -50,53 +50,20 @@ class Products(models.Model):
     class Meta():
         db_table = 'products'
 
+class ProdcutImage(models.Model):
+    product     = models.ForeignKey(Product, on_delete=models.CASCADE)
+    image_url   = models.CharField(max_length=500)
 
-# product detail/optiondjango
-
-class ProductOptions(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    description = models.CharField(max_length=50)
-    stock = models.IntegerField()
-    plus_price = models.IntegerField(null=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'product_options'
-
-class ProdcutImages(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    image_url = models.CharField(max_length=500)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
+    class Meta():
         db_table = 'product_images'
 
 
-class Attributes(models.Model):
-    description = models.CharField(max_length=45)
+## product detail/option
 
-    def __str__(self):
-        return self.name
+# product colors
 
-    class Meta:
-        db_table = 'attributes'
-
-class ProductAttributes(models.Model):
-    product   = models.ForeignKey(Products, on_delete=models.CASCADE)
-    attribute = models.ForeignKey(Attributes, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'product_attributes'
-
-class Colors(models.Model):
-    color = models.CharField(max_length=45)
+class Color(models.Model):
+    name = models.CharField(max_length=45)
 
     def __str__(self):
         return self.name
@@ -104,42 +71,70 @@ class Colors(models.Model):
     class Meta:
         db_table = 'colors'
 
-class Thicknesses(models.Model):
-    thickness = models.CharField(max_length=45)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'thicknesses'
-
-class BodyColors(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Colors, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
+class BodyColor(models.Model):  # middle table
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    color   = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'body_colors'
 
-class InkColors(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Colors, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
+class InkColor(models.Model):  # middle table
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    color   = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'ink_colors'
 
-class ProductThicknesses(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Thicknesses, on_delete=models.CASCADE)
+# product thickness
+
+class Thickness(models.Model):
+    value = models.CharField(max_length=45)
+
+    def __str__(self):
+        return self.value
+
+    class Meta:
+        db_table = 'thicknesses'
+
+
+class ProductThicknesses(models.Model):  # middle table
+    product    = models.ForeignKey(Product, on_delete=models.CASCADE)
+    thickness  = models.ForeignKey(Thickness, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'product_thicknesses'
+
+# option
+
+class ProductOption(models.Model):
+    product     = models.ForeignKey(Product, on_delete=models.CASCADE)
+    body_color  = models.ForeignKey(BodyColor, on_delete=models.CASCADE)
+    ink_color   = models.ForeignKey(InkColor, on_delete=models.CASCADE)
+    thickness   = models.ForeignKey(Thickness, on_delete=models.CASCADE)
+    stock       = models.IntegerField()
+    plus_price  = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'product_options'
+
+#product tags
+
+class Tag(models.Model):
+    name = models.CharField(max_length=45)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        db_table = 'product_thickness'
+        db_table = 'tags'
+
+class ProductAttributes(models.Model):  # middle table
+    product   = models.ForeignKey(Product, on_delete=models.CASCADE)
+    tag       = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'product_tags'
+
+
+
 
