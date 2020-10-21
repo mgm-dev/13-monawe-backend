@@ -156,3 +156,4 @@ my_settings.py
 product_mysql.py
 *.csv
 /csv_data
+user_mysql.py
