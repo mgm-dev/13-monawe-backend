@@ -18,7 +18,7 @@ class User(models.Model):
 
 
 class Address(models.Model):
-    user_id          = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id          = models.ForeignKey(User, on_delete=models.CASCADE)
     address          = models.CharField(max_length=200)
     detailed_address = models.CharField(max_length=200)
     zip_code         = models.IntegerField()

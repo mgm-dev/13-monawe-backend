@@ -17,7 +17,7 @@ class Order(models.Model):
     class Meta():
         db_table = 'orders'
 
-class Status(model.Model):
+class Status(models.Model):
     name = models.CharField(max_length=45)
 
     def __str__(self):
@@ -26,7 +26,7 @@ class Status(model.Model):
     class Meta():
         db_table = 'statuses'
 
-class OrderStatus(model.Models):
+class OrderStatus(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
 
@@ -36,7 +36,7 @@ class OrderStatus(model.Models):
     class Meta():
         db_table = 'order_statuses'
 
-class OrderProduct(model.Models):
+class OrderProduct(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
@@ -48,7 +48,7 @@ class OrderProduct(model.Models):
     class Meta():
         db_table = 'order_products'
 
-class DeliveryInfo(model.Models):
+class DeliveryInfo(models.Model):
     order_product = models.ForeignKey(OrderProduct, on_delete=models.CASCADE)
     company = models.CharField(max_length=45)
     tracking_number = models.CharField(max_length=45)
@@ -59,14 +59,14 @@ class DeliveryInfo(model.Models):
     class Meta():
         db_table = 'delivery_infos'
 
-class ProductReview(model.Models):
+class ProductReview(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     rating = models.DecimalField(max_digits=1, decimal_places=1)
     title = models.CharField(max_length=45)
     content = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
-    updated_at = models.DateTimeField(auto_now=True, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     image_url = models.URLField(max_length=200)
 
     def __str__(self):
@@ -76,7 +76,7 @@ class ProductReview(model.Models):
         db_table = 'product_reviews'
 
 
-class WishProduct(model.Models):
+class WishProduct(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
@@ -86,7 +86,7 @@ class WishProduct(model.Models):
     class Meta():
         db_table = 'wish_products'
 
-class ViewedProduct(model.Models):
+class ViewedProduct(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
