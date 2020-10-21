@@ -60,6 +60,14 @@ class ProductImage(models.Model):
 
 ## product detail/option
 
+class ProductOption(models.Model):
+    product     = models.ForeignKey(Product, on_delete=models.CASCADE)
+    stock       = models.IntegerField(null=True)
+    plus_price  = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+
+    class Meta:
+        db_table = 'product_options'
+
 # product colors
 
 class Color(models.Model):
@@ -72,14 +80,14 @@ class Color(models.Model):
         db_table = 'colors'
 
 class BodyColor(models.Model):  # middle table
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Color, on_delete=models.CASCADE)
+    product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
+    color          = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'body_colors'
 
 class InkColor(models.Model):  # middle table
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
     color   = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     class Meta:
@@ -98,24 +106,11 @@ class Thickness(models.Model):
 
 
 class ProductThicknesses(models.Model):  # middle table
-    product    = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
     thickness  = models.ForeignKey(Thickness, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'product_thicknesses'
-
-# option
-
-class ProductOption(models.Model):
-    product     = models.ForeignKey(Product, on_delete=models.CASCADE)
-    body_color  = models.ForeignKey(BodyColor, on_delete=models.CASCADE, null=True)
-    ink_color   = models.ForeignKey(InkColor, on_delete=models.CASCADE, null=True)
-    thickness   = models.ForeignKey(Thickness, on_delete=models.CASCADE, null=True)
-    stock       = models.IntegerField(null=True)
-    plus_price  = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-
-    class Meta:
-        db_table = 'product_options'
 
 #product tags
 

@@ -6,12 +6,12 @@ import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "monawe.settings")
 django.setup()
 
-from product.models import Fields, Categories, Groups, Products
+from product.models import Field, Category, Subcategory, Product
 
-CSV_PATH_FIELDS = 'csv_data/fields.csv'
-CSV_PATH_CATEGORIES = 'csv_data/categories.csv'
-CSV_PATH_SUBCATEGORIES = 'csv_data/subcategories.csv'
-CSV_PATH_PRODUCTS = 'csv_data/products.csv'
+CSV_PATH_FIELDS = 'csv_data/field.csv'
+CSV_PATH_CATEGORIES = 'csv_data/category.csv'
+CSV_PATH_SUBCATEGORIES = 'csv_data/subcategory.csv'
+CSV_PATH_PRODUCTS = 'csv_data/product.csv'
 
 with open(CSV_PATH_FIELDS) as in_file:
     data_reader = csv.reader(in_file)
