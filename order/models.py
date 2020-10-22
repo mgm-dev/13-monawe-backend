@@ -21,9 +21,6 @@ class Order(models.Model):
     date          = models.DateTimeField(auto_now=True)
     status        = models.ForeignKey(Status, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.name
-
     class Meta():
         db_table = 'orders'
 
@@ -33,9 +30,6 @@ class OrderProduct(models.Model):
     product_option  = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
     product_ammount = models.IntegerField()
 
-    def __str__(self):
-        return self.name
-
     class Meta():
         db_table = 'order_products'
 
@@ -43,9 +37,6 @@ class DeliveryInfo(models.Model):
     order_product   = models.ForeignKey(OrderProduct, on_delete=models.CASCADE)
     company         = models.CharField(max_length=45)
     tracking_number = models.CharField(max_length=45)
-
-    def __str__(self):
-        return self.name
 
     class Meta():
         db_table = 'delivery_infos'
@@ -60,19 +51,12 @@ class ProductReview(models.Model):
     updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     image_url  = models.URLField(max_length=200)
 
-    def __str__(self):
-        return self.name
-
     class Meta():
         db_table = 'product_reviews'
-
 
 class WishProduct(models.Model):
     user    = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
 
     class Meta():
         db_table = 'wish_products'
@@ -80,9 +64,6 @@ class WishProduct(models.Model):
 class ViewedProduct(models.Model):
     user    = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
 
     class Meta():
         db_table = 'viewed_products'
