@@ -35,7 +35,7 @@ class Subcategory(models.Model):
 class Product(models.Model):
     name         = models.CharField(max_length=45)
     subcategory  = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
-    price        = models.IntegerField()
+    price        = models.DecimalField(max_digits=10, decimal_places=2)
     origin       = models.CharField(max_length=45)
     company      = models.CharField(max_length=45)
     created_at   = models.DateField(auto_now=False)
@@ -82,11 +82,11 @@ class Thickness(models.Model):
 
 class ProductOption(models.Model):
     product     = models.ForeignKey(Product, on_delete=models.CASCADE)
+    body_color  = models.ForeignKey(Color, related_name ="body_color", on_delete=models.CASCADE, null=True)
+    ink_color   = models.ForeignKey(Color, related_name ="ink_color", on_delete=models.CASCADE, null=True)
+    thickness   = models.ForeignKey(Thickness,on_delete=models.CASCADE, null=True)
     stock       = models.IntegerField(null=True)
     plus_price  = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    body_color  = models.ForeignKey(Color, on_delete=models.CASCADE, null=True, related_name ="body_color")
-    ink_color   = models.ForeignKey(Color, on_delete=models.CASCADE, null=True, related_name ="ink_color")
-    thickness   = models.ForeignKey(Thickness,on_delete=models.CASCADE, null=True)
     etc_option  = models.CharField(max_length=50, null=True)
 
     class Meta:
