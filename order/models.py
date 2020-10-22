@@ -49,8 +49,8 @@ class OrderProduct(models.Model):
         db_table = 'order_products'
 
 class DeliveryInfo(models.Model):
-    order_product = models.ForeignKey(OrderProduct, on_delete=models.CASCADE)
-    company = models.CharField(max_length=45)
+    order_product   = models.ForeignKey(OrderProduct, on_delete=models.CASCADE)
+    company         = models.CharField(max_length=45)
     tracking_number = models.CharField(max_length=45)
 
     def __str__(self):
