@@ -44,7 +44,7 @@ class DeliveryInfo(models.Model):
 class ProductReview(models.Model):
     user       = models.ForeignKey(User, on_delete=models.CASCADE)
     product    = models.ForeignKey(Product, on_delete=models.CASCADE)
-    rating     = models.DecimalField(max_digits=1, decimal_places=1)
+    rating     = models.DecimalField(max_digits=2, decimal_places=1)
     title      = models.CharField(max_length=45)
     content    = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
