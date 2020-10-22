@@ -160,9 +160,5 @@ product_csv.py
 product_option_csv.py
 user_mysql.py
 product_mysql.py
-<<<<<<< HEAD
 *csv.py
 *mysql.py
-=======
-product_review_csv.py
->>>>>>> f7bc0b8bca1c60835b013798c620b95b3015cb8f
