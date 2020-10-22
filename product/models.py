@@ -59,7 +59,8 @@ class ProductImage(models.Model):
 # product colors
 
 class Color(models.Model):
-    name = models.CharField(max_length=45)
+    name     = models.CharField(max_length=45)
+    hex_code = models.CharField(max_length=45, default='000000')
 
     def __str__(self):
         return self.name
