@@ -8,8 +8,7 @@ class User(models.Model):
     name            = models.CharField(max_length=45)
     email           = models.EmailField(max_length=254)
     phone_number    = models.CharField(max_length=45)
-    date_of_birth   = models.DateField(
-        auto_now=False, auto_now_add=False, null=True)
+    date_of_birth   = models.DateField(auto_now=False, auto_now_add=False, null=True)
     sms_agreement   = models.BooleanField()
     email_agreement = models.BooleanField()
 
@@ -18,7 +17,7 @@ class User(models.Model):
 
 
 class Address(models.Model):
-    user_id          = models.ForeignKey(User, on_delete=models.CASCADE)
+    user             = models.ForeignKey(User, on_delete=models.CASCADE)
     address          = models.CharField(max_length=200)
     detailed_address = models.CharField(max_length=200)
     zip_code         = models.IntegerField()
