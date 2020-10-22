@@ -104,7 +104,7 @@ class Tag(models.Model):
     class Meta:
         db_table = 'tags'
 
-class ProductTag(models.Model):  # middle table
+class ProductTag(models.Model):
     product   = models.ForeignKey(Product, on_delete=models.CASCADE)
     tag       = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
