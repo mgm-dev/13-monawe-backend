@@ -153,9 +153,9 @@ dmypy.json
 # End of https://www.toptal.com/developers/gitignore/api/django
 
 my_settings.py
-product_csv.py
-product_option_csv.py
 *.csv
 /csv_data
-product_mysql.py
+user_csv.py
+product_csv.py
+product_option_csv.py
 user_mysql.py
