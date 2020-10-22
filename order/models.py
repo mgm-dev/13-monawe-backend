@@ -4,19 +4,6 @@ from product.models import Product, ProductOption
 
 # autopep8: off
 
-class Order(models.Model):
-    user          = models.ForeignKey(User, on_delete=models.CASCADE)
-    address       = models.ForeignKey(Address, on_delete=models.CASCADE)
-    post_number   = models.IntegerField()
-    order_request = models.CharField(max_length=45)
-    date          = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta():
-        db_table = 'orders'
-
 class Status(models.Model):
     name = models.CharField(max_length=45)
 
@@ -26,15 +13,19 @@ class Status(models.Model):
     class Meta():
         db_table = 'statuses'
 
-class OrderStatus(models.Model):
-    order  = models.ForeignKey(Order, on_delete=models.CASCADE)
-    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+class Order(models.Model):
+    user          = models.ForeignKey(User, on_delete=models.CASCADE)
+    address       = models.ForeignKey(Address, on_delete=models.CASCADE)
+    post_number   = models.IntegerField()
+    order_request = models.CharField(max_length=45)
+    date          = models.DateTimeField(auto_now=True)
+    status        = models.ForeignKey(Status, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
     class Meta():
-        db_table = 'order_statuses'
+        db_table = 'orders'
 
 class OrderProduct(models.Model):
     order           = models.ForeignKey(Order, on_delete=models.CASCADE)
