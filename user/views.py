@@ -67,7 +67,7 @@ class SignIn(View) :
                 key       = my_settings.SECRET.get('JWT_KEY')
                 algorithm = my_settings.SECRET.get('JWT_ALGORITHM')
                 token     = jwt.encode({'user' : user.id},key, algorithm = algorithm).decode('UTF-8')
-                return JsonResponse({"token": token}, status=200)
+                return JsonResponse({"token": token, "message": "SIGNIN_SUCCESS"}, status=200)
             else :
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
 
@@ -76,3 +76,6 @@ class SignIn(View) :
 
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
+
+        except ValidationError:
+            return JsonResponse({"message": "VALUE_ERROR"}, status=400)
