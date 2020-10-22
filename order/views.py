@@ -9,14 +9,37 @@ from product.models import Product
 
 # Create your views here.
 
+# Order
+
+class PlaceOrderView(View):
+
+    def post(self, request):
+        data = json.loads(request.body)
+        ordering_user = User.objects.get(id = data['user_id'])
+        deliever_address = Address.objects.get(id = data['address_id'])
+
+        Order(
+            user = ordering_user,
+            address = deliever_address,
+            order_request = data['request'],
+            date = data['date']
+        ).save()
+
+        return JsonResponse(
+            {'MESSAGE':'Order Success'},
+            status = 200
+        )
+
 # Review
 class ReviewUploadView(View):
 
     def post(self, request):
-        data = json.loads(request.body)
+        data            = json.loads(request.body)
+        target_product  = Product.objects.get(id = data['product_id'])
+
         ProductReview(
-            user        = User.objects.get(id=data['user']),
-            product     = Product.objects.get(id=data['product']),
+            user        = User.objects.get(id = data['user_id']),
+            product     = target_product,
             rating      = data['rating'],
             title       = data['title'],
             content     = data['content'],
@@ -24,6 +47,7 @@ class ReviewUploadView(View):
             updated_at  = data['updated_at'],
             image_url   = data['image_url'],
         ).save()
+
         return JsonResponse(
             {'MESSAGE':'Review uploaded'},
             status = 201
@@ -34,12 +58,10 @@ class ReviewShowView(View):
     def get(self, request):
         data = json.loads(request.body)
         reviews = ProductReview.objects.filter(product_id = data['product_id']).values()
-        review_list = []
-        for review in reviews:
-            review_list.append(review)
+        review_list = [review for review in reviews]
 
         return JsonResponse(
-            {'MESSAGE': review_list},
+            {'REVIEWS': review_list},
             status = 200
         )
 
@@ -47,11 +69,15 @@ class ReviewShowView(View):
 class AddWishView(View):
 
     def post(self, request):
-        data = json.loads(request.body)
+        data            = json.loads(request.body)
+        wishing_user    = User.objects.get(id = data['user_id'])
+        wished_product  = Product.objects.get(id = data['product_id'])
+
         WishProduct(
-            user    = User.objects.get(id = data['user']),
-            product = Product.objects.get(id = data['product'])
+            user    = wishing_user,
+            product = wished_product
         ).save()
+
         return JsonResponse(
             {'MESSAGE':'Added to the wishlist'},
             status = 200
@@ -61,32 +87,10 @@ class ShowWishView(View):
 
     def get(self, request):
         data = json.loads(request.body)
-        wish_items = WishProduct.objects.filter(user_id = data['user_id']).values()
-        item_list = []
-        for item in wish_items:
-            item_list.append(item)
+        wish_items = WishProduct.objects.filter(id = data['user_id']).values()
+        item_list = [item for item in wish_items]
 
         return JsonResponse(
-            {'MESSAGE': item_list},
+            {'WISH LIST': item_list},
             status = 200
         )
-
-# Order
-
-
-
-
-# class PlaceOrderView(View):
-
-#     def post(self, request):
-#         data = json.loads(request.body)
-#         Order(
-#             user = User.objects.get(id=data['user']),
-#             address = Address.objects.get(id=data['address']),
-#             order_request = data['request'],
-#             data = data['date']
-#         ).save()
-#         return JsonResponse(
-#             {'MESSAGE':'Order Success'},
-#             status = 200
-#         )

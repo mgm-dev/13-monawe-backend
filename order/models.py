@@ -4,6 +4,8 @@ from product.models import Product, ProductOption
 
 # autopep8: off
 
+# Order
+
 class Order(models.Model):
     user          = models.ForeignKey(User, on_delete=models.CASCADE)
     address       = models.ForeignKey(Address, on_delete=models.CASCADE)
