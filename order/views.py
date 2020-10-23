@@ -3,51 +3,38 @@ import json
 from django.http    import JsonResponse
 from django.views   import View
 
-from order.models import *
-from user.models import User, Address
+from order.models   import *
+from user.models    import User, Address
 from product.models import Product, ProductOption
 
 # Create your views here.
 
 # Order
+class CartView(View):
 
-# when a user adds products into the cart or places an order, an empty cart(virtual) should be created first.
-class CreateCartView(View):
-
+    # add the product into the cart
     def post(self, request):
-        data            = json.loads(request.body)
+        data = json.loads(request.body)
 
-        ordering_user   = User.objects.get(id = data['user_id'])
-        order_status    = OrderStatus.objects.get(id = 1)
+        # if the user has no cart yet, create the cart first
+        if not Order.objects.filter(user = data['user_id']).exists():
 
-        Order(
-            user            = ordering_user,
-            # address         = NULL,
-            # order_request   = NULL,
-            # date            = NULL,
-            order_status    = order_status
-        ).save()
+            ordering_user = User.objects.get(id = data['user_id'])
+            order_status  = OrderStatus.objects.get(id = 1)
 
-        return JsonResponse(
-            {'MESSAGE':'Cart Created'},
-            status = 201
-        )
-
-class AddProductView(View):  # when a user adds products in the cart
-
-    def post(self, request):
-        data                    = json.loads(request.body)
-        target_cart             = Order.objects.get(id = data['cart_id'])
+            Order(
+                user         = ordering_user,
+                order_status = order_status
+            ).save()
+        
+        target_cart             = Order.objects.get(user = data['user_id'])
         target_product_option   = ProductOption.objects.get(id = data['product_option_id'])
         target_product          = Product.objects.get(id = target_product_option.product_id)
 
-        # if the product already exists in the cart, the total amount of it is increased by 1
-        if OrderProduct.objects.filter(product_option = data['product_option_id'], order = data['cart_id']).exists():
-            OrderProduct.objects.filter(product_option = data['product_option_id'], order = data['cart_id']).update(product_amount = OrderProduct.objects.get(product_option = data['product_option_id'], order = data['cart_id']).product_amount + data['amount'])
-
+        if OrderProduct.objects.filter(order = target_cart, product_option = target_product_option).exists():
             return JsonResponse(
-                {'MESSAGE':'Amount Increased'},
-                status = 200
+                {'MESSAGE': 'This product already exists in the cart'},
+                status = 404
             )
 
         else:
@@ -59,21 +46,47 @@ class AddProductView(View):  # when a user adds products in the cart
             ).save()
 
             return JsonResponse(
-                {'MESSAGE': 'Added Product'},
+                {'MESSAGE': 'PRODUCT ADDED'},
                 status = 201
             )
 
-class PlaceOrderView(View):  # when a user places an order
 
-    def PUT(self, request):  # update values which are NULL
+    def get(self, request):
+        data             = json.loads(request.body)
+        target_cart      = Order.objects.get(user = data['user_id'])
+        products_in_cart = OrderProduct.objects.filter(order = target_cart).values()
+        product_list     = [product for product in products_in_cart]
+
+        return JsonResponse(
+            {'PRODUCTS LIST': product_list},
+            status = 200
+        )
+
+
+    def patch(self, request):
         data            = json.loads(request.body)
-        order_status    = Status.objects.get(id = 2)
+        target_cart     = Order.objects.get(user = data['user_id'])
+        product_in_cart = OrderProduct.objects.filter(product_option = data['product_option_id'], order = target_cart)
+
+        product_in_cart.update(product_amount = data['amount'])
+
+        return JsonResponse(
+            {'MESSAGE':'AMOUNT CHANGED'},
+            status = 200
+        )
+
+
+    # when a user places an order
+    def put(self, request):  # update values which are NULL
+        data             = json.loads(request.body)
+        order_status     = OrderStatus.objects.get(id = 2)
+        delivery_address = Address.objects.get(id = data['address_id'])
 
         target_cart                 = Order.objects.get(id = data['cart_id'])
-        target_cart.address         = data['address_id']
+        target_cart.address         = delivery_address
         target_cart.order_request   = data['request']
         target_cart.date            = data['date']
-        target_cart.status          = order_status
+        target_cart.order_status    = order_status
         target_cart.save()
 
         return JsonResponse(
@@ -81,20 +94,18 @@ class PlaceOrderView(View):  # when a user places an order
             status=200
         )
 
-class DeleteProductView(View):  # delete per product_option
 
     def delete(self, request):
         data = json.loads(request.body)
         OrderProduct.objects.get(id = data['order_product_id']).delete()
 
         return JsonResponse(
-            {'MESSAGE': 'DELETED'},
+            {'MESSAGE': 'PRODUCT DELETED'},
             status=200
         )
 
 
-# Review
-class ReviewUploadView(View):
+class ReviewView(View):
 
     def post(self, request):
         data            = json.loads(request.body)
@@ -123,11 +134,10 @@ class ReviewUploadView(View):
                 status = 201
             )
 
-class ReviewShowView(View):
     
     def get(self, request):
-        data = json.loads(request.body)
-        reviews = ProductReview.objects.filter(product_id = data['product_id']).values()
+        data        = json.loads(request.body)
+        reviews     = ProductReview.objects.filter(product = data['product_id']).values()
         review_list = [review for review in reviews]
 
         return JsonResponse(
@@ -135,8 +145,8 @@ class ReviewShowView(View):
             status = 200
         )
 
-# Wish List
-class AddWishView(View):
+
+class WishView(View):
 
     def post(self, request):
         data            = json.loads(request.body)
@@ -153,21 +163,30 @@ class AddWishView(View):
             status = 200
         )
 
-class ShowWishView(View):
 
     def get(self, request):
-        data = json.loads(request.body)
-        wish_products = WishProduct.objects.filter(id = data['user_id']).values()
-        product_list = [product for product in wish_products]
+        data            = json.loads(request.body)
+        wish_products   = WishProduct.objects.filter(user = data['user_id']).values()
+        product_list    = [product for product in wish_products]
 
         return JsonResponse(
             {'WISH LIST': product_list},
             status = 200
         )
 
-# recently viewed
-class AddViewedProduct(View):
+    
+    def delete(self, request):
+        data = json.loads(request.body)
+        WishProduct.objects.get(user = data['user_id'], product = data['product_id']).delete()
 
+        return JsonResponse(
+            {'MESSAGE': 'PRODUCT DELETED'},
+            status = 200
+        )
+
+
+class RecentlyViewedView(View):
+    
     def post(self, request):
         data            = json.loads(request.body)
         view_user       = User.objects.get(id = data['user_id'])
@@ -183,12 +202,11 @@ class AddViewedProduct(View):
             status = 200
         )
 
-class ShowViewedProduct(View):
 
     def get(self, request):
-        data = json.loads(request.body)
+        data            = json.loads(request.body)
         viewed_products = WishProduct.objects.filter(id = data['user_id']).values()
-        product_list = [product for product in viewed_products]
+        product_list    = [product for product in viewed_products]
 
         return JsonResponse(
             {'VIEWED LIST': product_list},

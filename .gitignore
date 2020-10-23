@@ -160,3 +160,5 @@ product_csv.py
 product_option_csv.py
 product_review_csv.py
 status_csv.py
+image_csv.py
+thumb_nail_mysql.py

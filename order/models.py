@@ -22,6 +22,7 @@ class Order(models.Model):
     order_status  = models.ForeignKey(OrderStatus, on_delete=models.CASCADE)
 
     class Meta():
+
         db_table = 'orders'
 
 class OrderProduct(models.Model):
@@ -51,10 +52,9 @@ class ProductReview(models.Model):
     content    = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
     updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
-    image_url  = models.URLField(max_length=200)
+    image_url  = models.URLField(max_length=200, null=True)
 
-    class Meta():
-        db_table = 'product_reviews'
+
 
 # Wish List
 
