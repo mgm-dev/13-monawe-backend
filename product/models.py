@@ -43,6 +43,25 @@ class Product(models.Model):
     description  = models.TextField(null=True)
     sales_amount = models.IntegerField(null=True)
 
+    def get_info(self):
+        data = {
+            'id'              : self.id,
+            'name'            : self.name,
+            'price'           : self.price,
+            'subcategory_id'  : self.subcategory.id,
+            'subcategory_name': Subcategory.objects.get(id=self.subcategory_id).name,
+            'created_at'      : self.created_at,
+            'company'         : self.company,
+            'description'     : self.description,
+            'sales_amount'    : self.sales_amount,
+        }
+        try:
+            data['image_url'] = self.productimage_set.all()[0].image_url
+        except IndexError:
+            data['image_url'] = ""
+
+        return data
+
     def __str__(self):
         return self.name
 
