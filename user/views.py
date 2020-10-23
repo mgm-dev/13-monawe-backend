@@ -53,7 +53,7 @@ class SignUp(View):
         except ValidationError:
             return JsonResponse({"message": "VALUE_ERROR"}, status=400)
 
-class SignIn(View) :
+class SignIn(View):
     def post(self, request):
         data = json.loads(request.body)
 
@@ -70,6 +70,46 @@ class SignIn(View) :
                 return JsonResponse({"token": token, "message": "SIGNIN_SUCCESS"}, status=200)
             else :
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
+
+        except KeyError:
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
+
+        except IntegrityError:
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
+
+        except ValidationError:
+            return JsonResponse({"message": "VALUE_ERROR"}, status=400)
+
+class CheckEmail(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        try:
+            duplicate = User.objects.filter(email=data.get('email')).exists()
+            if duplicate:
+                return JsonResponse({"message" : "USER_EMAIL_TAKEN"}, status=400)
+            else :
+                return JsonResponse({"message" : "USER_EMAIL_OK"}, status=200)
+
+        except KeyError:
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
+
+        except IntegrityError:
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
+
+        except ValidationError:
+            return JsonResponse({"message": "VALUE_ERROR"}, status=400)
+
+class CheckAccount(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        try:
+            duplicate = User.objects.filter(account=data.get('account')).exists()
+            if duplicate:
+                return JsonResponse({"message" : "USER_ID_TAKEN"}, status=400)
+            else :
+                return JsonResponse({"message" : "USER_ID_OK"}, status=200)
 
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
