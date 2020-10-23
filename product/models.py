@@ -42,23 +42,21 @@ class Product(models.Model):
     updated_at   = models.DateField(auto_now=False)
     description  = models.TextField(null=True)
     sales_amount = models.IntegerField(null=True)
+    thumb_nail   = models.URLField(max_length=200, null=True)
 
     def get_info(self):
         data = {
-            'id'              : self.id,
-            'name'            : self.name,
-            'price'           : self.price,
-            'subcategory_id'  : self.subcategory.id,
-            'subcategory_name': Subcategory.objects.get(id=self.subcategory_id).name,
-            'created_at'      : self.created_at,
-            'company'         : self.company,
-            'description'     : self.description,
-            'sales_amount'    : self.sales_amount,
+            'id'             : self.id,
+            'name'           : self.name,
+            'price'          : self.price,
+            'subcategoryId'  : self.subcategory.id,
+            'subcategoryName': Subcategory.objects.get(id=self.subcategory_id).name,
+            'createdAt'      : self.created_at,
+            'company'        : self.company,
+            'description'    : self.description,
+            'salesAmount'    : self.sales_amount,
+            'imageUrl'       : self.thumb_nail
         }
-        try:
-            data['image_url'] = self.productimage_set.all()[0].image_url
-        except IndexError:
-            data['image_url'] = ""
 
         return data
 

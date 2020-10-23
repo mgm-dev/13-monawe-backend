@@ -17,7 +17,7 @@ class All(View):
         for product in Product.objects.all():
             products.append(product.get_info())
 
-        return JsonResponse(products, safe=False)
+        return JsonResponse({ "productList" : products}, status=200)
 
 class Category(View):
     def get(self, request, category_id):
@@ -26,7 +26,7 @@ class Category(View):
         for product in Product.objects.filter(subcategory__in=subcategories):
             products.append(product.get_info())
 
-        return JsonResponse(products, safe=False)
+        return JsonResponse({ "productList" : products}, status=200)
 
 class Subcategory(View):
     def get(self, request, subcategory_id):
@@ -34,7 +34,7 @@ class Subcategory(View):
         for product in Product.objects.filter(subcategory_id=subcategory_id):
             products.append(product.get_info())
 
-        return JsonResponse(products, safe=False)
+        return JsonResponse({ "productList" : products}, status=200)
 
 class Detail(View):
     def get(self, request, product_id):
