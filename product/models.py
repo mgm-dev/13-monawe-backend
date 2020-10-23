@@ -98,6 +98,7 @@ class ProductOption(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=45)
+    product = models.ManyToManyField(Product, through='ProductTag')
 
     def __str__(self):
         return self.name
