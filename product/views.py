@@ -1,58 +1,64 @@
 # autopep8: off
-from django.views import View
-from pathlib      import Path
-from django.http  import JsonResponse
-from django.db    import IntegrityError
-from django.core  import serializers
+from django.views          import View
+from pathlib               import Path
+from django.http           import JsonResponse
+from django.db             import IntegrityError
+from django.core           import serializers
+from django.core.paginator import Paginator
+from django.http           import JsonResponse
 
 from product.models import Product, ProductImage, ProductOption, ProductTag, Category
 from product.models import Subcategory as SC
-from django.views   import View
-from django.http    import JsonResponse
 
 
 class All(View):
     def get(self, request):
-        order_by = request.GET.get('order_by', None)
-        products = []
+        order_by      = request.GET.get('order_by', None)
+        page_number   = request.GET.get('page_number', None)
+        item_per_page = request.GET.get('item_per_page', None)
 
-        if order_by:
-            for product in Product.objects.all().order_by(order_by):
-                products.append(product.get_info())
-        else:
-            for product in Product.objects.all():
-                products.append(product.get_info())
+        product_list = Product.objects.all().order_by(order_by)
+        paginator    = Paginator(product_list, item_per_page)
 
-        return JsonResponse({ "data" : products}, status=200)
+        data = []
+
+        for product in paginator.get_page(page_number):
+            data.append(product.get_info())
+
+        return JsonResponse({ "numPages" : paginator.num_pages, "data" : data }, status=200)
 
 class Category(View):
     def get(self, request, category_id):
-        order_by = request.GET.get('order_by', None)
+        order_by      = request.GET.get('order_by', None)
+        page_number   = request.GET.get('page_number', None)
+        item_per_page = request.GET.get('item_per_page', None)
         subcategories = SC.objects.filter(category_id=category_id)
-        products = []
 
-        if order_by:
-            for product in Product.objects.filter(subcategory__in=subcategories).order_by(order_by):
-                products.append(product.get_info())
-        else:
-            for product in Product.objects.filter(subcategory__in=subcategories):
-                products.append(product.get_info())
+        product_list = Product.objects.filter(subcategory__in=subcategories).order_by(order_by)
+        paginator    = Paginator(product_list, item_per_page)
 
-        return JsonResponse({ "data" : products}, status=200)
+        data = []
+
+        for product in paginator.get_page(page_number):
+            data.append(product.get_info())
+
+        return JsonResponse({ "numPages" : paginator.num_pages, "data" : data}, status=200)
 
 class Subcategory(View):
     def get(self, request, subcategory_id):
-        order_by = request.GET.get('order_by', None)
-        products = []
+        order_by      = request.GET.get('order_by', None)
+        page_number   = request.GET.get('page_number', None)
+        item_per_page = request.GET.get('item_per_page', None)
 
-        if order_by:
-            for product in Product.objects.filter(subcategory_id=subcategory_id).order_by(order_by):
-                products.append(product.get_info())
-        else:
-            for product in Product.objects.filter(subcategory_id=subcategory_id):
-                products.append(product.get_info())
+        product_list = Product.objects.filter(subcategory_id=subcategory_id).order_by(order_by)
+        paginator    = Paginator(product_list, item_per_page)
 
-        return JsonResponse({ "data" : products}, status=200)
+        data = []
+
+        for product in paginator.get_page(page_number):
+            data.append(product.get_info())
+
+        return JsonResponse({ "numPages" : paginator.num_pages, "data" : data }, status=200)
 
 class Detail(View):
     def get(self, request, product_id):
