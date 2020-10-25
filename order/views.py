@@ -63,6 +63,7 @@ class CartView(View):
         )
 
 
+    # change the total amount
     def patch(self, request):
         data            = json.loads(request.body)
         target_cart     = Order.objects.get(user = data['user_id'])
@@ -104,8 +105,7 @@ class CartView(View):
             status=200
         )
 
-
-class ReviewView(View):
+class ReviewUploadView(View):
 
     def post(self, request):
         data            = json.loads(request.body)
@@ -134,11 +134,12 @@ class ReviewView(View):
                 status = 201
             )
 
+class ReviewShowView(View):
     
-    def get(self, request):
-        data        = json.loads(request.body)
-        reviews     = ProductReview.objects.filter(product = data['product_id']).values()
-        review_list = [review for review in reviews]
+    def get(self, request, product_id):
+
+        review_data = ProductReview.objects.filter(product = product_id).values()
+        review_list = [review for review in review_data]
 
         return JsonResponse(
             {'REVIEWS': review_list},
@@ -199,8 +200,7 @@ class RecentlyViewedView(View):
 
         return JsonResponse(
             {'MESSAGE':'Added to the viewed list'},
-            status = 200
-        )
+            status = 200)
 
 
     def get(self, request):

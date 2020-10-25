@@ -54,7 +54,8 @@ class ProductReview(models.Model):
     updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     image_url  = models.URLField(max_length=200, null=True)
 
-
+    class Meta():
+        db_table  = 'product_reviews'
 
 # Wish List
 
