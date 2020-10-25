@@ -1,0 +1,76 @@
+{
+  "data": [
+      {
+          "id": 4,
+          "name": "404 골드",
+          "price": "50000.00",
+          "subcategoryId": 1,
+          "subcategoryName": "404프리미엄",
+          "createdAt": "2020-07-21",
+          "company": "(주)모나위",
+          "description": "",
+          "salesAmount": 916,
+          "imageUrl": "https://images.unsplash.com/photo-1588073019544-d9d80701ef83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
+      },
+      {
+          "id": 15,
+          "name": "[리필심증정] 포터 프리미엄 웨스트엔드 브러시드 골드 GT",
+          "price": "29250.00",
+          "subcategoryId": 2,
+          "subcategoryName": "파카",
+          "createdAt": "2019-08-03",
+          "company": "(주)모나위",
+          "description": "",
+          "salesAmount": 133,
+          "imageUrl": "https://images.unsplash.com/photo-1586958060273-f1ddaafbd396?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
+      },
+      {
+          "id": 18,
+          "name": "[병잉크증정] 얼반 프리미엄 골드 파우더 GT 만년필",
+          "price": "72000.00",
+          "subcategoryId": 2,
+          "subcategoryName": "파카",
+          "createdAt": "2019-06-17",
+          "company": "(주)모나위",
+          "description": "",
+          "salesAmount": 56,
+          "imageUrl": "https://images.unsplash.com/photo-1600658747056-eb00845297a5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
+      },
+      {
+          "id": 32,
+          "name": "[리필심증정] 카란다시 에크리도 볼펜 쉐브론 로즈골드",
+          "price": "270000.00",
+          "subcategoryId": 3,
+          "subcategoryName": "카란다시",
+          "createdAt": "2019-09-27",
+          "company": "(주)모나위",
+          "description": "",
+          "salesAmount": 597,
+          "imageUrl": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
+      },
+      {
+          "id": 35,
+          "name": "[리필심증정] 카란다시 849 메탈 볼펜 로즈골드",
+          "price": "70000.00",
+          "subcategoryId": 3,
+          "subcategoryName": "카란다시",
+          "createdAt": "2019-01-28",
+          "company": "(주)모나위",
+          "description": "",
+          "salesAmount": 971,
+          "imageUrl": "https://images.unsplash.com/photo-1585693907431-69d82bdced6f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
+      },
+      {
+          "id": 36,
+          "name": "[리필심증정] 카란다시 에크리도 볼펜 리뷰 얼베인 골드",
+          "price": "31000.00",
+          "subcategoryId": 3,
+          "subcategoryName": "카란다시",
+          "createdAt": "2020-09-12",
+          "company": "(주)모나위",
+          "description": "",
+          "salesAmount": 811,
+          "imageUrl": "https://images.unsplash.com/photo-1535556116002-6281ff3e9f36?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"
+      }
+  ]
+}

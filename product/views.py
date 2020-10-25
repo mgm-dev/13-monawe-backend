@@ -62,6 +62,31 @@ class Category(View):
         except FieldError:
             return JsonResponse({ "message" : "FIELD_ERROR"}, status=400)
 
+class Search(View):
+    def get(self,request):
+        try:
+            search_word = request.GET.get('search_word')
+
+            if len(search_word) == 0 :
+                return JsonResponse({"data" : []}, status=200)
+
+            product_list = Product.objects.filter(name__contains=search_word)
+
+            data = []
+
+            for product in product_list:
+                data.append(product.get_info())
+
+            return JsonResponse({"data" : data}, status=200)
+
+        except ValueError:
+            return JsonResponse({ "message" : "VALUE_ERROR"}, status=400)
+        except TypeError:
+            return JsonResponse({ "message" : "TYPE_ERROR"}, status=400)
+        except FieldError:
+            return JsonResponse({ "message" : "FIELD_ERROR"}, status=400)
+
+
 class Subcategory(View):
     def get(self, request, subcategory_id):
         try:
