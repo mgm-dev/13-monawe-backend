@@ -48,7 +48,7 @@ class Product(models.Model):
         data = {
             'id'             : self.id,
             'name'           : self.name,
-            'price'          : self.price,
+            'price'          : int(self.price),
             'subcategoryId'  : self.subcategory.id,
             'subcategoryName': Subcategory.objects.get(id=self.subcategory_id).name,
             'createdAt'      : self.created_at,
