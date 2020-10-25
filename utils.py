@@ -20,8 +20,10 @@ def signin_decorator(func):
 
             if token:
                 decode       = jwt.decode(token, key, algorithm=algorithm)
-                user         = User.objects.get(id=decode['user_id'])
+                user         = User.objects.get(id=decode['user'])
                 request.user = user
+            else :
+                return JsonResponse({"message" : "NO_TOKEN"}, status=403)
         except jwt.DecodeError:
             return JsonResponse({"message": "INVALID_TOKEN"}, status=403)
         except User.DoesNotExist:

@@ -5,6 +5,7 @@ import bcrypt
 import re
 import jwt
 import my_settings
+import utils
 
 from datetime               import datetime
 from django.views           import View
@@ -119,3 +120,19 @@ class CheckAccount(View):
 
         except ValidationError:
             return JsonResponse({"message": "VALUE_ERROR"}, status=400)
+
+class UserInfo(View):
+    @utils.signin_decorator
+    def get(self, request):
+        user_id = request.user.id
+        user_info = User.objects.get(id=user_id)
+        data = {
+            "id" : user_id,
+            "name" : user_info.name,
+            "account" : user_info.account,
+            "email" : user_info.email,
+            "phone_number" : user_info.phone_number,
+            "date_of_birth" : user_info.date_of_birth
+        }
+
+        return JsonResponse({"data" : data}, status=400)
