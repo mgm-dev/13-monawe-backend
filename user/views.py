@@ -60,7 +60,7 @@ class SignIn(View):
         user = User.objects.filter(account=data.get('account'))
         try:
             if not user.exists():
-                return JsonResponse({"message": "INVALID_USER_ID"}, status=409)
+                return JsonResponse({"message": "INVALID_USER"}, status=409)
 
             if bcrypt.checkpw(data.get('password').encode('UTF-8'), user[0].password.encode('UTF-8')):
                 key       = my_settings.SECRET.get('JWT_KEY')
