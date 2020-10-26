@@ -122,15 +122,18 @@ class CheckAccount(View):
 class UserInfo(View):
     @utils.signin_decorator
     def get(self, request):
-        user_id = request.user.id
-        user_info = User.objects.get(id=user_id)
-        data = {
-            "id" : user_id,
-            "name" : user_info.name,
-            "account" : user_info.account,
-            "email" : user_info.email,
-            "phone_number" : user_info.phone_number,
-            "date_of_birth" : user_info.date_of_birth
-        }
+        try:
+            user_id = request.user.id
+            user_info = User.objects.get(id=user_id)
+            data = {
+                "id" : user_id,
+                "name" : user_info.name,
+                "account" : user_info.account,
+                "email" : user_info.email,
+                "phone_number" : user_info.phone_number,
+                "date_of_birth" : user_info.date_of_birth
+            }
 
-        return JsonResponse({"data" : data}, status=400)
+            return JsonResponse({"data" : data}, status=400)
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'USER_DOES_NOT_EXIST'}, status=404)
