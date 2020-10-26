@@ -150,12 +150,12 @@ class Review(View):
             return JsonResponse({'MESSAGE': 'ALREADY_WROTE_REVIEW'}, status = 400)
         else:
             ProductReview(
-                user    = User.objects.get(id = data['user_id']),
-                product  = target_product,
-                rating      = data['rating'],
-                title       = data['title'],
-                content     = data['content'],
-                image_url   = data['image_url'],
+                user      = User.objects.get(id = data['user_id']),
+                product   = target_product,
+                rating    = data['rating'],
+                title     = data['title'],
+                content   = data['content'],
+                image_url = data['image_url'],
             ).save()
 
             return JsonResponse({'MESSAGE':'REVIEW_UPLOADED'}, status = 201)
