@@ -57,17 +57,15 @@ class SignUp(View):
 class SignIn(View):
     def post(self, request):
         data = json.loads(request.body)
-
+        user = User.objects.filter(account=data.get('account'))
         try:
-            if not User.objects.filter(account=data.get('account')).exists():
+            if not user.exists():
                 return JsonResponse({"message": "INVALID_USER_ID"}, status=409)
-            else :
-                user = User.objects.get(account=data.get('account'))
 
-            if bcrypt.checkpw(data.get('password').encode('UTF-8'), user.password.encode('UTF-8')):
+            if bcrypt.checkpw(data.get('password').encode('UTF-8'), user[0].password.encode('UTF-8')):
                 key       = my_settings.SECRET.get('JWT_KEY')
                 algorithm = my_settings.SECRET.get('JWT_ALGORITHM')
-                token     = jwt.encode({'user' : user.id},key, algorithm = algorithm).decode('UTF-8')
+                token     = jwt.encode({'user' : user[0].id},key, algorithm = algorithm).decode('UTF-8')
                 return JsonResponse({"token": token, "message": "SIGNIN_SUCCESS"}, status=200)
             else :
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
@@ -133,7 +131,6 @@ class UserInfo(View):
                 "phone_number" : user_info.phone_number,
                 "date_of_birth" : user_info.date_of_birth
             }
-
             return JsonResponse({"data" : data}, status=400)
         except User.DoesNotExist:
             return JsonResponse({'message': 'USER_DOES_NOT_EXIST'}, status=404)
