@@ -3,13 +3,13 @@ import json
 from django.http    import JsonResponse
 from django.views   import View
 
-from order.models   import *
+from order.models   import OrderStatus, Order, OrderProduct, DeliveryInfo, WishProduct, ViewedProduct
 from user.models    import User, Address
 from product.models import Product, ProductOption
 
 # Create your views here.
 
-# Order
+# Add to cart
 class CartView(View):
 
     # add the product into the cart
@@ -50,7 +50,6 @@ class CartView(View):
                 status = 201
             )
 
-
     def get(self, request):
         data             = json.loads(request.body)
         target_cart      = Order.objects.get(user = data['user_id'])
@@ -61,7 +60,6 @@ class CartView(View):
             {'PRODUCTS LIST': product_list},
             status = 200
         )
-
 
     # change the total amount
     def patch(self, request):
@@ -77,13 +75,24 @@ class CartView(View):
         )
 
 
-    # when a user places an order
-    def put(self, request):  # update values which are NULL
+    def delete(self, request):
+        data = json.loads(request.body)
+        OrderProduct.objects.get(id = data['order_product_id']).delete()
+
+        return JsonResponse(
+            {'MESSAGE': 'PRODUCT DELETED'},
+            status=200
+        )
+
+# Place an order
+class PlaceOrderView(View):
+
+    def patch(self, request):  # update values which are NULL
         data             = json.loads(request.body)
         order_status     = OrderStatus.objects.get(id = 2)
         delivery_address = Address.objects.get(id = data['address_id'])
+        target_cart      = Order.objects.get(id = data['cart_id'])
 
-        target_cart                 = Order.objects.get(id = data['cart_id'])
         target_cart.address         = delivery_address
         target_cart.order_request   = data['request']
         target_cart.date            = data['date']
@@ -95,57 +104,46 @@ class CartView(View):
             status=200
         )
 
+# class ReviewUploadView(View):
 
-    def delete(self, request):
-        data = json.loads(request.body)
-        OrderProduct.objects.get(id = data['order_product_id']).delete()
+#     def post(self, request):
+#         data            = json.loads(request.body)
+#         target_product  = Product.objects.get(id = data['product_id'])
 
-        return JsonResponse(
-            {'MESSAGE': 'PRODUCT DELETED'},
-            status=200
-        )
-
-class ReviewUploadView(View):
-
-    def post(self, request):
-        data            = json.loads(request.body)
-        target_product  = Product.objects.get(id = data['product_id'])
-
-        if ProductReview.objects.filter(product = data['product_id'], user = data['user_id']).exists():
-            return JsonResponse(
-                {'MESSAGE': 'Already wrote a review for this product'},
-                status = 404
-            )
+#         if ProductReview.objects.filter(product = data['product_id'], user = data['user_id']).exists():
+#             return JsonResponse(
+#                 {'MESSAGE': 'Already wrote a review for this product'},
+#                 status = 404
+#             )
         
-        else:
-            ProductReview(
-                user        = User.objects.get(id = data['user_id']),
-                product     = target_product,
-                rating      = data['rating'],
-                title       = data['title'],
-                content     = data['content'],
-                created_at  = data['created_at'],
-                updated_at  = data['updated_at'],
-                image_url   = data['image_url'],
-            ).save()
+#         else:
+#             ProductReview(
+#                 user        = User.objects.get(id = data['user_id']),
+#                 product     = target_product,
+#                 rating      = data['rating'],
+#                 title       = data['title'],
+#                 content     = data['content'],
+#                 created_at  = data['created_at'],
+#                 updated_at  = data['updated_at'],
+#                 image_url   = data['image_url'],
+#             ).save()
 
-            return JsonResponse(
-                {'MESSAGE':'Review uploaded'},
-                status = 201
-            )
+#             return JsonResponse(
+#                 {'MESSAGE':'Review uploaded'},
+#                 status = 201
+#             )
 
-class ReviewShowView(View):
+# class ReviewShowView(View):
     
-    def get(self, request, product_id):
+#     def get(self, request, product_id):
 
-        review_data = ProductReview.objects.filter(product = product_id).values()
-        review_list = [review for review in review_data]
+#         review_data = ProductReview.objects.filter(product = product_id).values()
+#         review_list = [review for review in review_data]
 
-        return JsonResponse(
-            {'REVIEWS': review_list},
-            status = 200
-        )
-
+#         return JsonResponse(
+#             {'REVIEWS': review_list},
+#             status = 200
+#         )
 
 class WishView(View):
 
@@ -164,7 +162,6 @@ class WishView(View):
             status = 200
         )
 
-
     def get(self, request):
         data            = json.loads(request.body)
         wish_products   = WishProduct.objects.filter(user = data['user_id']).values()
@@ -174,7 +171,6 @@ class WishView(View):
             {'WISH LIST': product_list},
             status = 200
         )
-
     
     def delete(self, request):
         data = json.loads(request.body)
@@ -184,7 +180,6 @@ class WishView(View):
             {'MESSAGE': 'PRODUCT DELETED'},
             status = 200
         )
-
 
 class RecentlyViewedView(View):
     
@@ -201,7 +196,6 @@ class RecentlyViewedView(View):
         return JsonResponse(
             {'MESSAGE':'Added to the viewed list'},
             status = 200)
-
 
     def get(self, request):
         data            = json.loads(request.body)
