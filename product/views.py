@@ -163,3 +163,13 @@ class Review(View):
             ).save()
 
             return JsonResponse({'MESSAGE':'REVIEW_UPDATED'}, status = 201)
+
+    def delete(self, request):
+        data           = json.loads(request.body)
+        target_review  = Product.objects.get(id = data['review_id'])
+
+        if not ProductReview.objects.filter(id = target_review).exists():
+            return JsonResponse({'MESSAGE': 'REVIEW_DOES_NOT_EXIST'}, status = 404)
+        else:
+            ProductReview.objects.filter(id = target_review).delete()
+            return JsonResponse({'MESSAGE': 'REVIEW_DELETED'}, status = 200)
