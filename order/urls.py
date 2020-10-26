@@ -1,13 +1,12 @@
 from django.urls import path
-from order.views import CartView, ReviewUploadView, ReviewShowView, WishView, RecentlyViewedView
-
-
+from order.views import CartView, PlaceOrderView, WishView, RecentlyViewedView, ShowOrdersView, DetailOrderView
 
 
 urlpatterns = [
-    path('cart',                    CartView.as_view()),
-    path('review',                  ReviewUploadView.as_view()),
-    path('review/<int:product_id>', ReviewShowView.as_view()),
-    path('wishlist',                WishView.as_view()),
-    path('recentlyviewed',          RecentlyViewedView.as_view())
+    path('cart',                        CartView.as_view()),
+    path('checkout',                    CheckoutView.as_view()),
+    path('list',                        ShowOrdersView.as_view()),
+    path('detail/<int:order_id>',       DetailOrderView.as_view()),
+    path('wishlist',                    WishView.as_view()),
+    path('recent',                      RecentlyViewedView.as_view())
 ]

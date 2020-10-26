@@ -90,13 +90,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='order',
-<<<<<<< HEAD
             name='order_status',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='order.orderstatus'),
-=======
-            name='status',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='order.status'),
->>>>>>> 2ba575e0597745315443707724dd19eb26988971
         ),
         migrations.AddField(
             model_name='order',
