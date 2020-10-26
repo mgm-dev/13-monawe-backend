@@ -60,7 +60,7 @@ class SignIn(View):
 
         try:
             if not User.objects.filter(account=data.get('account')).exists():
-                return JsonResponse({"message": "INVALID_USER_ID"}, status=401)
+                return JsonResponse({"message": "INVALID_USER_ID"}, status=409)
             else :
                 user = User.objects.get(account=data.get('account'))
 
