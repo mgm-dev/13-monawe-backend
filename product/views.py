@@ -143,11 +143,23 @@ class Review(View):
                 rating      = data['rating'],
                 title       = data['title'],
                 content     = data['content'],
-                created_at  = data['created_at'],
-                updated_at  = data['updated_at'],
                 image_url   = data['image_url'],
             ).save()
 
             return JsonResponse({'MESSAGE':'REVIEW_UPLOADED'}, status = 201)
 
+    def patch(self, request):
+        data           = json.loads(request.body)
+        target_review  = Product.objects.get(id = data['review_id'])
 
+        if not ProductReview.objects.filter(id = target_review).exists():
+            return JsonResponse({'MESSAGE': 'REVIEW_DOES_NOT_EXIST'}, status = 404)
+        else:
+            ProductReview(
+                rating      = data['rating'],
+                title       = data['title'],
+                content     = data['content'],
+                image_url   = data['image_url'],
+            ).save()
+
+            return JsonResponse({'MESSAGE':'REVIEW_UPDATED'}, status = 201)
