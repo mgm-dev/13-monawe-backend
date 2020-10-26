@@ -35,7 +35,7 @@ class Subcategory(models.Model):
 class Product(models.Model):
     name         = models.CharField(max_length=45)
     subcategory  = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
-    price        = models.IntegerField()
+    price        = models.DecimalField(max_digits=10, decimal_places=2)
     origin       = models.CharField(max_length=45)
     company      = models.CharField(max_length=45)
     created_at   = models.DateField(auto_now=False)
@@ -60,7 +60,7 @@ class ProductImage(models.Model):
 # product colors
 
 class Color(models.Model):
-    name = models.CharField(max_length=45)
+    name     = models.CharField(max_length=45)
     hex_code = models.CharField(max_length=45, default='000000')
 
     def __str__(self):
@@ -99,6 +99,7 @@ class ProductOption(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=45)
+    product = models.ManyToManyField(Product, through='ProductTag')
 
     def __str__(self):
         return self.name
@@ -106,7 +107,7 @@ class Tag(models.Model):
     class Meta:
         db_table = 'tags'
 
-class ProductTag(models.Model):  # middle table
+class ProductTag(models.Model):
     product   = models.ForeignKey(Product, on_delete=models.CASCADE)
     tag       = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
