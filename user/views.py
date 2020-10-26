@@ -12,16 +12,15 @@ from django.views           import View
 from user.models            import User
 from django.http            import JsonResponse
 from django.db              import IntegrityError
-from django.core.exceptions import ValidationError
 
 class SignUp(View):
     def post(self, request):
-        data  = json.loads(request.body)
-        regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-        if not (re.search(regex, data.get('email'))):
-            return JsonResponse({"message": "INVALID_EMAIL"}, status=400)
-
         try:
+            data  = json.loads(request.body)
+            regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+            if not (re.search(regex, data.get('email'))):
+                return JsonResponse({"message": "INVALID_EMAIL"}, status=400)
+
             if User.objects.filter(account=data.get('account')).exists():
                 return JsonResponse({"message": "USER_ID_TAKEN"}, status=400)
 
@@ -51,14 +50,15 @@ class SignUp(View):
         except IntegrityError:
             return JsonResponse({"message": "INTEGRITY_ERROR"}, status=400)
 
-        except ValidationError:
+        except ValueError:
             return JsonResponse({"message": "VALUE_ERROR"}, status=400)
 
 class SignIn(View):
     def post(self, request):
-        data = json.loads(request.body)
-        user = User.objects.filter(account=data.get('account'))
         try:
+            data = json.loads(request.body)
+            user = User.objects.filter(account=data.get('account'))
+
             if not user.exists():
                 return JsonResponse({"message": "INVALID_USER"}, status=409)
 
@@ -76,14 +76,14 @@ class SignIn(View):
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
-        except ValidationError:
+        except ValueError:
             return JsonResponse({"message": "VALUE_ERROR"}, status=400)
 
 class CheckEmail(View):
     def post(self, request):
-        data = json.loads(request.body)
-
         try:
+            data = json.loads(request.body)
+
             if User.objects.filter(email=data.get('email')).exists():
                 return JsonResponse({"message" : "USER_EMAIL_TAKEN"}, status=400)
             else :
@@ -95,14 +95,14 @@ class CheckEmail(View):
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
-        except ValidationError:
+        except ValueError:
             return JsonResponse({"message": "VALUE_ERROR"}, status=400)
 
 class CheckAccount(View):
     def post(self, request):
-        data = json.loads(request.body)
-
         try:
+            data = json.loads(request.body)
+
             if User.objects.filter(account=data.get('account')).exists():
                 return JsonResponse({"message" : "USER_ID_TAKEN"}, status=400)
             else :
@@ -114,7 +114,7 @@ class CheckAccount(View):
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
-        except ValidationError:
+        except ValueError:
             return JsonResponse({"message": "VALUE_ERROR"}, status=400)
 
 class UserInfo(View):
