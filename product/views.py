@@ -77,6 +77,7 @@ class Detail(View):
 
             bodyColor = []
             inkColor  = []
+            options   = []
 
             for product_option in ProductOption.objects.filter(product=product):
                 body         = {}
@@ -87,8 +88,13 @@ class Detail(View):
                 ink['name'] = product_option.ink_color.name
                 ink['hex']  = product_option.ink_color.hex_code
 
+                option = {}
+                option['name'] = body['name'] + "/" + ink['name'] + "(" + product_option.thickness.value + "mm)" + "(재고" + str(product_option.stock) + "개)"
+                option['price'] = product.price + product_option.plus_price
+
                 bodyColor.append(body)
                 inkColor.append(ink)
+                options.append(option)
 
             data = {
                 'productInfo': {
@@ -100,10 +106,7 @@ class Detail(View):
                     'description': product.description,
                     'tag'        : [productTag.tag.name for productTag in ProductTag.objects.filter(product=product)],
                     'price'      : product.price,
-                    'options'    : [product_option.body_color.name + "/" + product_option.ink_color.name
-                                    + "(" + product_option.thickness.value + "mm)"
-                                    + "(재고:" + str(product_option.stock) + "개)"
-                                    for product_option in ProductOption.objects.filter(product=product)],
+                    'options'    : options,
                     'stock'      : [product_option.stock for product_option in ProductOption.objects.filter(product=product)]
                 }
             }
