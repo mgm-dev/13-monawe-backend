@@ -105,8 +105,7 @@ class CheckAccount(View):
         data = json.loads(request.body)
 
         try:
-            duplicate = User.objects.filter(account=data.get('account')).exists()
-            if duplicate:
+            if User.objects.filter(account=data.get('account')).exists():
                 return JsonResponse({"message" : "USER_ID_TAKEN"}, status=400)
             else :
                 return JsonResponse({"message" : "USER_ID_OK"}, status=200)
