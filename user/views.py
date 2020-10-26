@@ -44,9 +44,6 @@ class SignUp(View):
 
             return JsonResponse({"message": "SIGNUP_SUCCESS"}, status=200)
 
-        except KeyError:
-            return JsonResponse({"message": "KEY_ERROR"}, status=400)
-
         except IntegrityError:
             return JsonResponse({"message": "INTEGRITY_ERROR"}, status=400)
 
@@ -70,9 +67,6 @@ class SignIn(View):
             else :
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
 
-        except KeyError:
-            return JsonResponse({"message": "KEY_ERROR"}, status=400)
-
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
@@ -89,9 +83,6 @@ class CheckEmail(View):
             else :
                 return JsonResponse({"message" : "USER_EMAIL_OK"}, status=200)
 
-        except KeyError:
-            return JsonResponse({"message": "KEY_ERROR"}, status=400)
-
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
@@ -107,9 +98,6 @@ class CheckAccount(View):
                 return JsonResponse({"message" : "USER_ID_TAKEN"}, status=400)
             else :
                 return JsonResponse({"message" : "USER_ID_OK"}, status=200)
-
-        except KeyError:
-            return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
