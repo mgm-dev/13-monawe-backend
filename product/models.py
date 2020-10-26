@@ -42,6 +42,7 @@ class Product(models.Model):
     updated_at   = models.DateField(auto_now=False)
     description  = models.TextField(null=True)
     sales_amount = models.IntegerField(null=True)
+    thumb_nail   = models.URLField(max_length=200, null=True)
 
     def __str__(self):
         return self.name
@@ -60,6 +61,7 @@ class ProductImage(models.Model):
 
 class Color(models.Model):
     name = models.CharField(max_length=45)
+    hex_code = models.CharField(max_length=45, default='000000')
 
     def __str__(self):
         return self.name

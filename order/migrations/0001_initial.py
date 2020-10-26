@@ -18,7 +18,6 @@ class Migration(migrations.Migration):
             name='Order',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('post_number', models.IntegerField()),
                 ('order_request', models.CharField(max_length=45)),
                 ('date', models.DateTimeField(auto_now=True)),
                 ('address', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.address')),
@@ -28,7 +27,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Status',
+            name='OrderStatus',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=45)),
@@ -63,7 +62,7 @@ class Migration(migrations.Migration):
             name='ProductReview',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('rating', models.DecimalField(decimal_places=1, max_digits=1)),
+                ('rating', models.DecimalField(decimal_places=1, max_digits=2)),
                 ('title', models.CharField(max_length=45)),
                 ('content', models.CharField(max_length=200)),
                 ('created_at', models.DateTimeField(auto_now=True)),
@@ -91,8 +90,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='order',
-            name='status',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='order.status'),
+            name='order_status',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='order.orderstatus'),
         ),
         migrations.AddField(
             model_name='order',
