@@ -9,6 +9,7 @@ from django.core            import serializers
 from django.core.paginator  import Paginator
 from django.core.exceptions import FieldError
 from django.http            import JsonResponse
+from django.utils           import timezone
 
 from product.models import Product, ProductImage, ProductOption, ProductTag, Subcategory, Category, ProductReview
 from user.models    import User
@@ -162,6 +163,7 @@ class Review(View):
                 title       = data['title'],
                 content     = data['content'],
                 image_url   = data['image_url'],
+                updated_at  = timezone.now(),
             )
             return JsonResponse({'MESSAGE':'REVIEW_UPDATED'}, status = 201)
 

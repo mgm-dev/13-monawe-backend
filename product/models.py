@@ -137,8 +137,8 @@ class ProductReview(models.Model):
     rating     = models.DecimalField(max_digits=2, decimal_places=1)
     title      = models.CharField(max_length=45)
     content    = models.CharField(max_length=200)
-    created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
-    updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     image_url  = models.URLField(max_length=200, null=True)
 
     class Meta():
