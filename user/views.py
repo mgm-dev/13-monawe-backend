@@ -86,8 +86,7 @@ class CheckEmail(View):
         data = json.loads(request.body)
 
         try:
-            duplicate = User.objects.filter(email=data.get('email')).exists()
-            if duplicate:
+            if User.objects.filter(email=data.get('email')).exists():
                 return JsonResponse({"message" : "USER_EMAIL_TAKEN"}, status=400)
             else :
                 return JsonResponse({"message" : "USER_EMAIL_OK"}, status=200)
