@@ -181,14 +181,20 @@ class Address(View):
 
     @utils.signin_decorator
     def delete(self, request):
-        user_id = request.user.id
-        data = json.loads(request.body)
-        target = Address.objects.get(id = data['address_id'])
+        try:
+            user_id = request.user.id
+            data = json.loads(request.body)
+            target = Address.objects.get(id = data['address_id'])
 
-        if target.user_id == user_id:
-            target.delete()
-            return JsonResponse({"message": "ADDRESS_DELETED"}, status = 200)
+            if target.user_id == user_id:
+                target.delete()
+                return JsonResponse({"message": "ADDRESS_DELETED"}, status = 200)
 
-        return JsonResponse({"message": "NO_PERMISSION"}, status = 403)
+            return JsonResponse({"message": "NO_PERMISSION"}, status = 403)
+
+        except KeyError:
+            return JsonResponse({"message": "KEY_ERROR"}, status = 400)
+        except Address.DoesNotExist:
+            return JsonResponse({"message": "ADDRESS_DOES_NOT_EXIST"}, status = 404)
 
 
