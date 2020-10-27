@@ -61,17 +61,10 @@ class SignIn(View):
             if bcrypt.checkpw(data.get('password').encode('UTF-8'), user.password.encode('UTF-8')):
                 key       = my_settings.SECRET.get('JWT_KEY')
                 algorithm = my_settings.SECRET.get('JWT_ALGORITHM')
-<<<<<<< HEAD
                 token     = jwt.encode({'user' : user.id},key, algorithm = algorithm).decode('UTF-8')
                 return JsonResponse({"token": token, "message": "SIGNIN_SUCCESS", "name" : user.name}, status=200)
 
             return JsonResponse({"message": "INVALID_USER"}, status=401)
-=======
-                token     = jwt.encode({'user' : user[0].id},key, algorithm = algorithm).decode('UTF-8')
-                return JsonResponse({"token": token, "message": "SIGNIN_SUCCESS", "name" : user[0].name}, status=200)
-            else :
-                return JsonResponse({"message": "INVALID_USER"}, status=401)
->>>>>>> address/api
 
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
@@ -144,7 +137,7 @@ class AddAddress(View):
 
         if Address.objects.filter(user = user_id, address = address, detailed_address = detailed_address).exists():
             return JsonResponse({"MESSAGE" : "Given address already exists"}, status = 404)
-        
+
         else:
             if (Address.objects.filter(user = user_id, is_default = 1).exists()) and data['is_default'] == 1:
                 existing_default.is_default = 0
@@ -194,9 +187,9 @@ class AddAddress(View):
         data = json.loads(request.body)
         user_id = data['user_id']
         target = Address.objects.get(id = data['address_id'])
-        
+
         target.delete()
 
         return JsonResponse({"MESSAGE": "ADDRESS DELETED"}, status = 200)
-    
+
 
