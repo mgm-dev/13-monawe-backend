@@ -25,8 +25,7 @@ class SignUp(View):
                 return JsonResponse({"message": "USER_ID_TAKEN"}, status=400)
 
             password       = data.get('password').encode('utf-8')
-            password_crypt = bcrypt.hashpw(password, bcrypt.gensalt())
-            password_crypt = password_crypt.decode('utf-8')
+            password_crypt = bcrypt.hashpw(password, bcrypt.gensalt()).decode('utf-8')
 
             date_string = data.get('dateOfBirth')
             date = datetime.strptime(date_string, '%Y%m%d').strftime('%Y-%m-%d')
