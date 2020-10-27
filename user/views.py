@@ -9,7 +9,7 @@ import utils
 
 from datetime               import datetime
 from django.views           import View
-from user.models            import User
+from user.models            import User, Address
 from django.http            import JsonResponse
 from django.db              import IntegrityError
 
@@ -63,7 +63,7 @@ class SignIn(View):
                 key       = my_settings.SECRET.get('JWT_KEY')
                 algorithm = my_settings.SECRET.get('JWT_ALGORITHM')
                 token     = jwt.encode({'user' : user[0].id},key, algorithm = algorithm).decode('UTF-8')
-                return JsonResponse({"token": token, "message": "SIGNIN_SUCCESS"}, status=200)
+                return JsonResponse({"token": token, "message": "SIGNIN_SUCCESS", "name" : user[0].name}, status=200)
             else :
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
 
@@ -122,3 +122,74 @@ class UserInfo(View):
             return JsonResponse({"data" : data}, status=400)
         except User.DoesNotExist:
             return JsonResponse({'message': 'USER_DOES_NOT_EXIST'}, status=404)
+
+
+class AddAddress(View):
+    @utils.signin_decorator
+    def post(self, request):
+        data = json.loads(request.body)        
+        user_id = request.user.id
+        # user_id = User.objects.get(id = data['user_id'])
+        address = data['address']
+        detailed_address = data['detailed_address']
+        zip_code = data['zip_code']
+        existing_default = Address.objects.get(user = user_id, is_default = 1)
+
+        if Address.objects.filter(user = user_id, address = address, detailed_address = detailed_address).exists():
+            return JsonResponse({"MESSAGE" : "Given address already exists"}, status = 404)
+        
+        else:
+            if (Address.objects.filter(user = user_id, is_default = 1).exists()) and data['is_default'] == 1:
+                existing_default.is_default = 0
+                existing_default.save()
+                Address(
+                    user                = user_id,
+                    address             = address,
+                    detailed_address    = detailed_address,
+                    zip_code            = zip_code,
+                    is_default          = 1
+                ).save()
+                return JsonResponse({"MESSAGE":"ADDRESS ADDED AND CHANGE THE DEFAULT ADDRESS"}, status=201)
+            else:
+                Address(
+                    user                = user_id,
+                    address             = address,
+                    detailed_address    = detailed_address,
+                    zip_code            = zip_code,
+                    is_default          = data['is_default']
+                ).save()
+                return JsonResponse({"MESSAGE": "ADDRESS ADDED"}, status=201)
+
+    @utils.signin_decorator
+    def get(self, request):
+
+        user_id = request.user.id   
+        addresses = Address.objects.filter(user = user_id).values()
+        addresses_list = [address for address in addresses]
+
+        return JsonResponse({"Addresses": addresses_list}, status =200)
+
+    @utils.signin_decorator
+    def patch(self, request):
+        user_id = request.user.id
+        Address(
+            user                = user_id,
+            address             = address,
+            detailed_address    = detailed_address,
+            zip_code            = zip_code,
+            is_default          = data['is_default']
+        ).save()
+        return JsonResponse({"MESSAGE": "ADDRESS CHANGED"}, status = 200)
+
+    # @utils.signin_decorator
+    def delete(self, request):
+        # user_id = request.user.id
+        data = json.loads(request.body)
+        user_id = data['user_id']
+        target = Address.objects.get(id = data['address_id'])
+        
+        target.delete()
+
+        return JsonResponse({"MESSAGE": "ADDRESS DELETED"}, status = 200)
+    
+

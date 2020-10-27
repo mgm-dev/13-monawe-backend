@@ -21,7 +21,7 @@ class Address(models.Model):
     address          = models.CharField(max_length=200)
     detailed_address = models.CharField(max_length=200)
     zip_code         = models.IntegerField()
-    is_default       = models.CharField(max_length=10, null=True)
+    is_default       = models.SmallIntegerField(default = 0)
 
     class Meta:
         db_table = "addresses"
