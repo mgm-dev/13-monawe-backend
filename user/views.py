@@ -129,14 +129,13 @@ class Address(View):
     def post(self, request):
         data = json.loads(request.body)        
         user_id = request.user.id
-        # user_id = User.objects.get(id = data['user_id'])
         address = data['address']
         detailed_address = data['detailed_address']
         zip_code = data['zip_code']
         existing_default = Address.objects.get(user = user_id, is_default = 1)
 
         if Address.objects.filter(user = user_id, address = address, detailed_address = detailed_address).exists():
-            return JsonResponse({"MESSAGE" : "Given address already exists"}, status = 404)
+            return JsonResponse({"message" : "ADDRESS_ALREADY_EXIST"}, status = 409)
 
         else:
             if (Address.objects.filter(user = user_id, is_default = 1).exists()) and data['is_default'] == 1:
@@ -149,7 +148,7 @@ class Address(View):
                     zip_code            = zip_code,
                     is_default          = 1
                 ).save()
-                return JsonResponse({"MESSAGE":"ADDRESS ADDED AND CHANGE THE DEFAULT ADDRESS"}, status=201)
+                return JsonResponse({"message":"ADDRESS_ADDED_AS_DEFAULT"}, status=201)
             else:
                 Address(
                     user                = user_id,
@@ -158,20 +157,19 @@ class Address(View):
                     zip_code            = zip_code,
                     is_default          = data['is_default']
                 ).save()
-                return JsonResponse({"MESSAGE": "ADDRESS ADDED"}, status=201)
+                return JsonResponse({"message": "ADDRESS_ADDED"}, status=201)
 
     @utils.signin_decorator
     def get(self, request):
+        user_id = request.user.id
+        addresses_list = [address for address in Address.objects.filter(user = user_id).values()]
 
-        user_id = request.user.id   
-        addresses = Address.objects.filter(user = user_id).values()
-        addresses_list = [address for address in addresses]
-
-        return JsonResponse({"Addresses": addresses_list}, status =200)
+        return JsonResponse({"data": addresses_list}, status =200)
 
     @utils.signin_decorator
     def patch(self, request):
         user_id = request.user.id
+        data = json.loads(request.body)
         Address(
             user                = user_id,
             address             = address,
@@ -179,17 +177,18 @@ class Address(View):
             zip_code            = zip_code,
             is_default          = data['is_default']
         ).save()
-        return JsonResponse({"MESSAGE": "ADDRESS CHANGED"}, status = 200)
+        return JsonResponse({"message": "ADDRESS_CHANGED"}, status = 200)
 
-    # @utils.signin_decorator
+    @utils.signin_decorator
     def delete(self, request):
-        # user_id = request.user.id
+        user_id = request.user.id
         data = json.loads(request.body)
-        user_id = data['user_id']
         target = Address.objects.get(id = data['address_id'])
 
-        target.delete()
+        if target.user_id == user_id:
+            target.delete()
+            return JsonResponse({"message": "ADDRESS_DELETED"}, status = 200)
 
-        return JsonResponse({"MESSAGE": "ADDRESS DELETED"}, status = 200)
+        return JsonResponse({"message": "NO_PERMISSION"}, status = 403)
 
 
