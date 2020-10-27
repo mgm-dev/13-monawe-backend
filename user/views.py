@@ -124,6 +124,25 @@ class UserInfo(View):
             return JsonResponse({'message': 'USER_DOES_NOT_EXIST'}, status=404)
 
 
-class Address(View):
+class AddressView(View):
+    @utils.signin_decorator
+    def post(self, request):
+        try:
+            user_id = request.user.id
+            data  = json.loads(request.body)
+            Address(
+                user_id = user_id,
+                address = data.get('address'),
+                detailed_address = data.get('detailed_address'),
+                zip_code = data.get('zip_code'),
+                is_default = data.get('is_default')
+            ).save()
+            return JsonResponse({"message": "ADDRESS_CREATED"}, status=200)
+
+        except IntegrityError:
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
+
+        except ValueError:
+            return JsonResponse({"message": "VALUE_ERROR"}, status=400)
 
 
