@@ -44,7 +44,7 @@ class SignUp(View):
             return JsonResponse({"message": "SIGNUP_SUCCESS"}, status=200)
 
         except IntegrityError:
-            return JsonResponse({"message": "INTEGRITY_ERROR"}, status=400)
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
         except ValueError:
             return JsonResponse({"message": "VALUE_ERROR"}, status=400)
