@@ -35,22 +35,20 @@ class ProductList(View):
             offset         = (page_number - 1) * item_per_page
 
             if subcategory_id:
-                product_count = Product.objects.filter(subcategory_id=subcategory_id).count()
-                num_pages     = product_count // item_per_page if product_count % item_per_page == 0 else product_count // item_per_page + 1;
-                product_list  = Product.objects.filter(subcategory_id=subcategory_id).order_by(order_by)[offset:offset+item_per_page]
+                filter_condition = {'subcategory_id' : subcategory_id}
             elif category_id:
                 subcategories = Subcategory.objects.filter(category_id=category_id)
-                product_count = Product.objects.filter(subcategory__in=subcategories).count()
-                num_pages     = product_count // item_per_page if product_count % item_per_page == 0 else product_count // item_per_page + 1;
-                product_list  = Product.objects.filter(subcategory__in=subcategories).order_by(order_by)[offset:offset+item_per_page]
+                filter_condition = {'subcategory__in' : subcategories}
             else:
-                product_count = Product.objects.all().count()
-                num_pages     = product_count // item_per_page if product_count % item_per_page == 0 else product_count // item_per_page + 1;
-                product_list  = Product.objects.all().order_by(order_by)[offset:offset+item_per_page]
+                filter_condition = {}
+
+            product_count = Product.objects.filter(**filter_condition).count()
+            product_list  = Product.objects.filter(**filter_condition).order_by(order_by)[offset:offset+item_per_page]
+            num_pages = product_count // item_per_page if product_count % item_per_page == 0 else product_count // item_per_page + 1;
 
             data = [product.get_info() for product in product_list]
 
-            return JsonResponse({ "numPages" : num_pages, "data" : data}, status=200)
+            return JsonResponse({ "numPages" : num_pages, "numProducts" : product_count, "data" : data}, status=200)
 
         except ValueError:
             return JsonResponse({ "message" : "VALUE_ERROR"}, status=400)
