@@ -145,4 +145,11 @@ class AddressView(View):
         except ValueError:
             return JsonResponse({"message": "VALUE_ERROR"}, status=400)
 
-
+    @utils.signin_decorator
+    def get(self, request):
+        try:
+            user_id = request.user.id
+            data = [address for address in Address.objects.filter(user_id=user_id).values()]
+            return JsonResponse({"data" : data}, status=200)
+        except Address.DoesNotExist:
+            return JsonResponse({'message': 'ADDRESS_DOES_NOT_EXIST'}, status=404)
