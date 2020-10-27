@@ -16,6 +16,17 @@ from user.models    import User
 class ProductList(View):
     def get(self, request):
         try:
+            search = request.GET.get('search', None)
+
+            if search:
+                if len(search) == 0 :
+                    return JsonResponse({"data" : []}, status=200)
+
+                product_list = Product.objects.filter(name__contains=search)
+                data = [product.get_info() for product in product_list]
+
+                return JsonResponse({"data" : data}, status=200)
+
             order_by       = request.GET.get('order_by', None)
             page_number    = int(request.GET.get('page_number', None))
             item_per_page  = int(request.GET.get('item_per_page', None))
@@ -40,31 +51,6 @@ class ProductList(View):
             data = [product.get_info() for product in product_list]
 
             return JsonResponse({ "numPages" : num_pages, "data" : data}, status=200)
-
-        except ValueError:
-            return JsonResponse({ "message" : "VALUE_ERROR"}, status=400)
-        except TypeError:
-            return JsonResponse({ "message" : "TYPE_ERROR"}, status=400)
-        except FieldError:
-            return JsonResponse({ "message" : "FIELD_ERROR"}, status=400)
-
-
-class Search(View):
-    def get(self,request):
-        try:
-            search_word = request.GET.get('search_word')
-
-            if len(search_word) == 0 :
-                return JsonResponse({"data" : []}, status=200)
-
-            product_list = Product.objects.filter(name__contains=search_word)
-
-            data = []
-
-            for product in product_list:
-                data.append(product.get_info())
-
-            return JsonResponse({"data" : data}, status=200)
 
         except ValueError:
             return JsonResponse({ "message" : "VALUE_ERROR"}, status=400)
