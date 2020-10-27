@@ -124,7 +124,7 @@ class UserInfo(View):
             return JsonResponse({'message': 'USER_DOES_NOT_EXIST'}, status=404)
 
 
-class AddAddress(View):
+class Address(View):
     @utils.signin_decorator
     def post(self, request):
         data = json.loads(request.body)        

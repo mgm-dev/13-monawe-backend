@@ -1,5 +1,5 @@
 from django.urls import path
-from user.views import SignUp, SignIn, CheckEmail, CheckAccount, UserInfo, AddAddress
+from user.views import SignUp, SignIn, CheckEmail, CheckAccount, UserInfo, Address
 
 urlpatterns = [
     path('signup', SignUp.as_view()),
@@ -7,5 +7,5 @@ urlpatterns = [
     path('checkemail', CheckEmail.as_view()),
     path('checkaccount', CheckAccount.as_view()),
     path('userinfo', UserInfo.as_view()),
-    path('address', AddAddress.as_view()),
+    path('address', Address.as_view()),
 ]
