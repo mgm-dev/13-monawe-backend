@@ -82,8 +82,7 @@ class CheckEmail(View):
 
             if User.objects.filter(email=data.get('email')).exists():
                 return JsonResponse({"message" : "USER_EMAIL_TAKEN"}, status=400)
-            else :
-                return JsonResponse({"message" : "USER_EMAIL_OK"}, status=200)
+            return JsonResponse({"message" : "USER_EMAIL_OK"}, status=200)
 
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
@@ -98,8 +97,7 @@ class CheckAccount(View):
 
             if User.objects.filter(account=data.get('account')).exists():
                 return JsonResponse({"message" : "USER_ID_TAKEN"}, status=400)
-            else :
-                return JsonResponse({"message" : "USER_ID_OK"}, status=200)
+            return JsonResponse({"message" : "USER_ID_OK"}, status=200)
 
         except IntegrityError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
