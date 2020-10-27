@@ -153,3 +153,22 @@ class AddressView(View):
             return JsonResponse({"data" : data}, status=200)
         except Address.DoesNotExist:
             return JsonResponse({'message': 'ADDRESS_DOES_NOT_EXIST'}, status=404)
+
+    @utils.signin_decorator
+    def delete(self, request):
+        try:
+            user_id = request.user.id
+            data = json.loads(request.body)
+            target_address = Address.objects.get(id=data.get('address_id'))
+
+            if not target_address:
+                return JsonResponse({'message': 'ADDRESS_DOES_NOT_EXIST'}, status=404)
+
+            if not target_address.user_id == user_id:
+                return JsonResponse({'message': 'NO_PERMISSION'}, status=403)
+
+            target_address.delete()
+            return JsonResponse({'message': 'ADDRESS_DELETED'}, status=202)
+
+        except Address.DoesNotExist:
+            return JsonResponse({'message': 'ADDRESS_DOES_NOT_EXIST'}, status=404)
