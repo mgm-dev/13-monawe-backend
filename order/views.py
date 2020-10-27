@@ -3,6 +3,7 @@ import json
 from django.http    import JsonResponse
 from django.views   import View
 
+
 from order.models   import OrderStatus, Order, OrderProduct, WishProduct, ViewedProduct
 from user.models    import User, Address
 from product.models import Product, ProductOption
@@ -14,16 +15,11 @@ class CartView(View):
     # add the product into the cart
     def post(self, request):
         data = json.loads(request.body)
-
         # if the user has no cart yet, create the cart first
         if not (Order.objects.filter(user = data['user_id'], order_status = 1).exists()):
-
-            ordering_user = User.objects.get(id = data['user_id'])
-            order_status  = OrderStatus.objects.get(id = 1)
-
             Order(
-                user         = ordering_user,
-                order_status = order_status
+                user_id         = data['user_id'],
+                order_status_id = 1
             ).save()
     
         target_cart             = Order.objects.get(order_status = 1, user = data['user_id'])
@@ -52,12 +48,12 @@ class CartView(View):
 
     def get(self, request):
         data             = json.loads(request.body)
-        target_cart      = Order.objects.get(user = data['user_id'], order_status=1)
-        products_in_cart = OrderProduct.objects.filter(order = target_cart).values()
-        product_list     = [product for product in products_in_cart]
+        products_in_cart = [product for product in Order.objects.get(
+                           user = data['user_id'], order_status = 1
+                           ).orderproduct_set.all().values()]
 
         return JsonResponse(
-            {'PRODUCTS LIST': product_list},
+            {'PRODUCTS LIST': products_in_cart},
             status = 200
         )
 
@@ -80,7 +76,7 @@ class CartView(View):
 
         return JsonResponse(
             {'MESSAGE': 'PRODUCT DELETED'},
-            status=200
+            status=204
         )
 
 
@@ -106,23 +102,20 @@ class CheckoutView(View):
 class ShowOrdersView(View):
 
     def get(self, request):
-        data = json.loads(request.body)
-        all_orders = Order.objects.filter(user = data['user_id']).values()
-        all_orders_list = [order for order in all_orders]
+        data            = json.loads(request.body)
+        all_orders      = [order for order in Order.objects.filter(user = data['user_id']).values()]
 
         return JsonResponse(
-            {'ORDERS LIST': all_orders_list},
+            {'ORDERS LIST': all_orders},
             status = 200
         )
 
 class DetailOrderView(View):
-
     def get(self, request, order_id):
-        ordered_products   = OrderProduct.objects.filter(order = order_id).values()
-        print(ordered_products)
-        products_per_order = [product for product in ordered_products]        
+        ordered_products   = [product for product in OrderProduct.objects.filter(order = order_id).values()]
+
         return JsonResponse(
-            {'PRODUCTS LIST': products_per_order},
+            {'PRODUCTS LIST':ordered_products},
             status = 200
         )
 
@@ -130,27 +123,23 @@ class DetailOrderView(View):
 class WishView(View):
     def post(self, request):
         data            = json.loads(request.body)
-        wishing_user    = User.objects.get(id = data['user_id'])
-        wished_product  = Product.objects.get(id = data['product_id'])
 
         WishProduct(
-            user    = wishing_user,
-            product = wished_product
+            user_id    = data['user_id'],
+            product_id = data['product_id']
         ).save()
 
         return JsonResponse(
             {'MESSAGE':'Added to the wishlist'},
-            status = 200
+            status = 201
         )
 
     def get(self, request):
         data            = json.loads(request.body)
-
-        wish_products   = WishProduct.objects.filter(user = data['user_id']).values()
-        product_list    = [product for product in wish_products]
+        wish_products   = [product for product in WishProduct.objects.filter(user = data['user_id']).values()]
 
         return JsonResponse(
-            {'WISH LIST': product_list},
+            {'WISH LIST': wish_products},
             status = 200
         )
     
@@ -160,31 +149,31 @@ class WishView(View):
 
         return JsonResponse(
             {'MESSAGE': 'PRODUCT DELETED'},
-            status = 200
+            status = 204
         )
 
 
-class RecentlyViewedView(View):
-    def post(self, request):
-        data            = json.loads(request.body)
-        view_user       = User.objects.get(id = data['user_id'])
-        viewed_product  = Product.objects.get(id = data['product_id'])
+# class RecentlyViewedView(View):
+#     def post(self, request):
+#         data            = json.loads(request.body)
+#         view_user       = User.objects.get(id = data['user_id'])
+#         viewed_product  = Product.objects.get(id = data['product_id'])
 
-        ViewedProduct(
-            user    = view_user,
-            product = viewed_product
-        ).save()
+#         ViewedProduct(
+#             user    = view_user,
+#             product = viewed_product
+#         ).save()
 
-        return JsonResponse(
-            {'MESSAGE':'Added to the viewed list'},
-            status = 200)
+#         return JsonResponse(
+#             {'MESSAGE':'Added to the viewed list'},
+#             status = 200)
 
-    def get(self, request):
-        data            = json.loads(request.body)
-        viewed_products = ViewedProduct.objects.filter(user = data['user_id']).values()
-        product_list    = [product for product in viewed_products]
+#     def get(self, request):
+#         data            = json.loads(request.body)
+#         viewed_products = ViewedProduct.objects.filter(user = data['user_id']).values()
+#         product_list    = [product for product in viewed_products]
 
-        return JsonResponse(
-            {'VIEWED LIST': product_list},
-            status = 200
-        )
+#         return JsonResponse(
+#             {'VIEWED LIST': product_list},
+#             status = 200
+#         )
