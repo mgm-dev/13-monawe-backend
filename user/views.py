@@ -53,15 +53,15 @@ class SignIn(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            user = User.objects.filter(account=data.get('account'))
+            user = User.objects.get(account=data.get('account'))
 
-            if not user.exists():
+            if not user:
                 return JsonResponse({"message": "INVALID_USER"}, status=409)
 
-            if bcrypt.checkpw(data.get('password').encode('UTF-8'), user[0].password.encode('UTF-8')):
+            if bcrypt.checkpw(data.get('password').encode('UTF-8'), user.password.encode('UTF-8')):
                 key       = my_settings.SECRET.get('JWT_KEY')
                 algorithm = my_settings.SECRET.get('JWT_ALGORITHM')
-                token     = jwt.encode({'user' : user[0].id},key, algorithm = algorithm).decode('UTF-8')
+                token     = jwt.encode({'user' : user.id},key, algorithm = algorithm).decode('UTF-8')
                 return JsonResponse({"token": token, "message": "SIGNIN_SUCCESS"}, status=200)
             else :
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
@@ -71,6 +71,9 @@ class SignIn(View):
 
         except ValueError:
             return JsonResponse({"message": "VALUE_ERROR"}, status=400)
+
+        except User.DoesNotExist:
+            return JsonResponse({"message": "INVALID_USER"}, status=401)
 
 class CheckEmail(View):
     def post(self, request):
