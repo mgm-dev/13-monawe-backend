@@ -69,17 +69,20 @@ class Detail(View):
             options   = []
 
             for product_option in ProductOption.objects.filter(product=product):
-                body         = {}
-                body['name'] = product_option.body_color.name
-                body['hex']  = product_option.body_color.hex_code
+                body = {
+                    'name' : product_option.body_color.name,
+                    'hex'  : product_option.body_color.hex_code
+                }
 
-                ink         = {}
-                ink['name'] = product_option.ink_color.name
-                ink['hex']  = product_option.ink_color.hex_code
+                ink = {
+                    'name' : product_option.ink_color.name,
+                    'hex'  : product_option.ink_color.hex_code
+                }
 
-                option = {}
-                option['name'] = body['name'] + "/" + ink['name'] + "(" + product_option.thickness.value + "mm)" + "(재고" + str(product_option.stock) + "개)"
-                option['price'] = product.price + product_option.plus_price
+                option = {
+                    'name'  : body['name'] + "/" + ink['name'] + "(" + product_option.thickness.value + "mm)" + "(재고" + str(product_option.stock) + "개)",
+                    'price' : product.price + product_option.plus_price
+                }
 
                 bodyColor.append(body)
                 inkColor.append(ink)
