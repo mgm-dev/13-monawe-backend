@@ -37,10 +37,7 @@ class ProductList(View):
                 num_pages     = product_count // item_per_page if product_count % item_per_page == 0 else product_count // item_per_page + 1;
                 product_list  = Product.objects.all().order_by(order_by)[offset:offset+item_per_page]
 
-            data = []
-
-            for product in product_list:
-                data.append(product.get_info())
+            data = [product.get_info() for product in product_list]
 
             return JsonResponse({ "numPages" : num_pages, "data" : data}, status=200)
 
