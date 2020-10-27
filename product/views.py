@@ -62,13 +62,16 @@ class ProductList(View):
 class Detail(View):
     def get(self, request, product_id):
         try:
-            product = Product.objects.get(id=product_id)
+            product             = Product.objects.get(id=product_id)
+            product_image_list  = product.productimage_set.all()
+            product_option_list = product.productoption_set.all()
+            product_tag_list    = product.producttag_set.all()
 
             bodyColor = []
             inkColor  = []
             options   = []
 
-            for product_option in product.productoption_set.all():
+            for product_option in product_option_list:
                 body = {
                     'name' : product_option.body_color.name,
                     'hex'  : product_option.body_color.hex_code
@@ -88,18 +91,19 @@ class Detail(View):
                 inkColor.append(ink)
                 options.append(option)
 
+
             data = {
                 'productInfo': {
                     'name'       : product.name,
-                    'imageUrl'   : [product_image.image_url for product_image in ProductImage.objects.filter(product=product)],
+                    'imageUrl'   : [product_image.image_url for product_image in product_image_list],
                     'bodyColor'  : bodyColor,
                     'inkColor'   : inkColor,
-                    'thickness'  : [product_option.thickness.value for product_option in ProductOption.objects.filter(product=product)],
+                    'thickness'  : [product_option.thickness.value for product_option in product_option_list],
                     'description': product.description,
-                    'tag'        : [productTag.tag.name for productTag in ProductTag.objects.filter(product=product)],
+                    'tag'        : [product_tag.tag.name for product_tag in product_tag_list],
                     'price'      : product.price,
                     'options'    : options,
-                    'stock'      : [product_option.stock for product_option in ProductOption.objects.filter(product=product)]
+                    'stock'      : [product_option.stock for product_option in product_option_list]
                 }
             }
 
