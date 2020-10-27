@@ -68,7 +68,7 @@ class Detail(View):
             inkColor  = []
             options   = []
 
-            for product_option in ProductOption.objects.filter(product=product):
+            for product_option in product.productoption_set.all():
                 body = {
                     'name' : product_option.body_color.name,
                     'hex'  : product_option.body_color.hex_code
