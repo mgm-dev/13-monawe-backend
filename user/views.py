@@ -119,7 +119,7 @@ class UserInfo(View):
                 "phone_number" : user_info.phone_number,
                 "date_of_birth": user_info.date_of_birth
             }
-            return JsonResponse({"data" : data}, status=400)
+            return JsonResponse({"data" : data}, status=200)
         except User.DoesNotExist:
             return JsonResponse({'message': 'USER_DOES_NOT_EXIST'}, status=404)
 
