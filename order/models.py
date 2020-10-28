@@ -4,6 +4,7 @@ from product.models import Product, ProductOption
 
 # autopep8: off
 
+# Order
 class OrderStatus(models.Model):
     name = models.CharField(max_length=45)
 
@@ -21,6 +22,10 @@ class Order(models.Model):
     order_status  = models.ForeignKey(OrderStatus, on_delete=models.CASCADE)
 
     class Meta():
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6ca094c1872151b899b0ae0b1cc92220ca22d831
         db_table = 'orders'
 
 class OrderProduct(models.Model):
@@ -40,6 +45,7 @@ class DeliveryInfo(models.Model):
     class Meta():
         db_table = 'delivery_infos'
 
+<<<<<<< HEAD
 # Review
 
 # class ProductReview(models.Model):
@@ -52,6 +58,20 @@ class DeliveryInfo(models.Model):
 #     updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
 #     image_url  = models.URLField(max_length=200, null=True)
 
+=======
+# # Review
+
+# class ProductReview(models.Model):
+#     user       = models.ForeignKey(User, on_delete=models.CASCADE)
+#     product    = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     rating     = models.DecimalField(max_digits=2, decimal_places=1)
+#     title      = models.CharField(max_length=45)
+#     content    = models.CharField(max_length=200)
+#     created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+#     updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+#     image_url  = models.URLField(max_length=200, null=True)
+
+>>>>>>> 6ca094c1872151b899b0ae0b1cc92220ca22d831
 #     class Meta():
 #         db_table  = 'product_reviews'
 

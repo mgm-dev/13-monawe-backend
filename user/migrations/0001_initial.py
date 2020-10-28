@@ -38,8 +38,7 @@ class Migration(migrations.Migration):
                 ('address', models.CharField(max_length=200)),
                 ('detailed_address', models.CharField(max_length=200)),
                 ('zip_code', models.IntegerField()),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='user.user')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.user')),
             ],
             options={
                 'db_table': 'addresses',
