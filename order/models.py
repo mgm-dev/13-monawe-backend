@@ -4,7 +4,8 @@ from product.models import Product, ProductOption
 
 # autopep8: off
 
-class Status(models.Model):
+# Order
+class OrderStatus(models.Model):
     name = models.CharField(max_length=45)
 
     def __str__(self):
@@ -15,20 +16,20 @@ class Status(models.Model):
 
 class Order(models.Model):
     user          = models.ForeignKey(User, on_delete=models.CASCADE)
-    address       = models.ForeignKey(Address, on_delete=models.CASCADE)
-    post_number   = models.IntegerField()
-    order_request = models.CharField(max_length=45)
-    date          = models.DateTimeField(auto_now=True)
-    status        = models.ForeignKey(Status, on_delete=models.CASCADE)
+    address       = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
+    order_request = models.CharField(max_length=45, null=True)
+    date          = models.DateTimeField(auto_now=True, null=True)
+    order_status  = models.ForeignKey(OrderStatus, on_delete=models.CASCADE)
 
     class Meta():
+
         db_table = 'orders'
 
 class OrderProduct(models.Model):
     order           = models.ForeignKey(Order, on_delete=models.CASCADE)
     product         = models.ForeignKey(Product, on_delete=models.CASCADE)
     product_option  = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    product_ammount = models.IntegerField()
+    product_amount  = models.IntegerField()
 
     class Meta():
         db_table = 'order_products'
@@ -41,18 +42,34 @@ class DeliveryInfo(models.Model):
     class Meta():
         db_table = 'delivery_infos'
 
-class ProductReview(models.Model):
-    user       = models.ForeignKey(User, on_delete=models.CASCADE)
-    product    = models.ForeignKey(Product, on_delete=models.CASCADE)
-    rating     = models.DecimalField(max_digits=2, decimal_places=1)
-    title      = models.CharField(max_length=45)
-    content    = models.CharField(max_length=200)
-    created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
-    updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
-    image_url  = models.URLField(max_length=200)
+# Review
 
-    class Meta():
-        db_table = 'product_reviews'
+# class ProductReview(models.Model):
+#     user       = models.ForeignKey(User, on_delete=models.CASCADE)
+#     product    = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     rating     = models.DecimalField(max_digits=2, decimal_places=1)
+#     title      = models.CharField(max_length=45)
+#     content    = models.CharField(max_length=200)
+#     created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+#     updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+#     image_url  = models.URLField(max_length=200, null=True)
+
+# # Review
+
+# class ProductReview(models.Model):
+#     user       = models.ForeignKey(User, on_delete=models.CASCADE)
+#     product    = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     rating     = models.DecimalField(max_digits=2, decimal_places=1)
+#     title      = models.CharField(max_length=45)
+#     content    = models.CharField(max_length=200)
+#     created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+#     updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+#     image_url  = models.URLField(max_length=200, null=True)
+
+#     class Meta():
+#         db_table  = 'product_reviews'
+
+# Wish List
 
 class WishProduct(models.Model):
     user    = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -61,10 +78,11 @@ class WishProduct(models.Model):
     class Meta():
         db_table = 'wish_products'
 
+# recently viewed
+
 class ViewedProduct(models.Model):
     user    = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     class Meta():
         db_table = 'viewed_products'
-
