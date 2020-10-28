@@ -35,10 +35,10 @@ class SignUp(View):
                 password        = password_crypt,
                 name            = data.get('name'),
                 email           = data.get('email'),
-                phone_number    = data.get('phoneNumber'),
+                phone_number    = data.get('phone_number'),
                 date_of_birth   = date,
-                sms_agreement   = data.get('smsAgreement'),
-                email_agreement = data.get('smsAgreement'),
+                sms_agreement   = data.get('sms_agreement'),
+                email_agreement = data.get('email_agreement'),
             ).save()
 
             return JsonResponse({"message": "SIGNUP_SUCCESS"}, status=200)
