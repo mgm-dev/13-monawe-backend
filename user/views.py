@@ -18,32 +18,32 @@ class SignUp(View):
         try:
             data  = json.loads(request.body)
             regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-            if not (re.search(regex, data.get('email'))):
+            if not (re.search(regex, data['email'])):
                 return JsonResponse({"message": "INVALID_EMAIL"}, status=400)
 
-            if User.objects.filter(account=data.get('account')).exists():
+            if User.objects.filter(account=data['account']).exists():
                 return JsonResponse({"message": "USER_ID_TAKEN"}, status=400)
 
-            password       = data.get('password').encode('utf-8')
+            password       = data['password'].encode('utf-8')
             password_crypt = bcrypt.hashpw(password, bcrypt.gensalt()).decode('utf-8')
 
-            date_string = data.get('dateOfBirth')
+            date_string = data['dateOfBirth']
             date = datetime.strptime(date_string, '%Y%m%d').strftime('%Y-%m-%d')
 
             User(
-                account         = data.get('account'),
+                account         = data['account'],
                 password        = password_crypt,
-                name            = data.get('name'),
-                email           = data.get('email'),
-                phone_number    = data.get('phone_number'),
+                name            = data['name'],
+                email           = data['email'],
+                phone_number    = data['phone_number'],
                 date_of_birth   = date,
-                sms_agreement   = data.get('sms_agreement'),
-                email_agreement = data.get('email_agreement'),
+                sms_agreement   = data['sms_agreement'],
+                email_agreement = data['email_agreement'],
             ).save()
 
             return JsonResponse({"message": "SIGNUP_SUCCESS"}, status=200)
 
-        except IntegrityError:
+        except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
         except ValueError:
@@ -53,12 +53,12 @@ class SignIn(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            user = User.objects.get(account=data.get('account'))
+            user = User.objects.get(account=data['account'])
 
             if not user:
                 return JsonResponse({"message": "INVALID_USER"}, status=409)
 
-            if bcrypt.checkpw(data.get('password').encode('UTF-8'), user.password.encode('UTF-8')):
+            if bcrypt.checkpw(data['password'].encode('UTF-8'), user.password.encode('UTF-8')):
                 key       = my_settings.SECRET.get('JWT_KEY')
                 algorithm = my_settings.SECRET.get('JWT_ALGORITHM')
                 token     = jwt.encode({'user' : user.id},key, algorithm = algorithm).decode('UTF-8')
@@ -66,7 +66,7 @@ class SignIn(View):
 
             return JsonResponse({"message": "INVALID_USER"}, status=401)
 
-        except IntegrityError:
+        except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
         except ValueError:
@@ -80,11 +80,11 @@ class CheckEmail(View):
         try:
             data = json.loads(request.body)
 
-            if User.objects.filter(email=data.get('email')).exists():
+            if User.objects.filter(email=data['email']).exists():
                 return JsonResponse({"message" : "USER_EMAIL_TAKEN"}, status=400)
             return JsonResponse({"message" : "USER_EMAIL_OK"}, status=200)
 
-        except IntegrityError:
+        except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
         except ValueError:
@@ -95,11 +95,11 @@ class CheckAccount(View):
         try:
             data = json.loads(request.body)
 
-            if User.objects.filter(account=data.get('account')).exists():
+            if User.objects.filter(account=data['account']).exists():
                 return JsonResponse({"message" : "USER_ID_TAKEN"}, status=400)
             return JsonResponse({"message" : "USER_ID_OK"}, status=200)
 
-        except IntegrityError:
+        except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
         except ValueError:
@@ -131,19 +131,19 @@ class AddressView(View):
             user_id = request.user.id
             data  = json.loads(request.body)
 
-            if data.get('is_default'):
+            if data['is_default']:
                 Address.objects.filter(user_id=user_id).update(is_default=0)
 
             Address(
                 user_id = user_id,
-                address = data.get('address'),
-                detailed_address = data.get('detailed_address'),
-                zip_code = data.get('zip_code'),
-                is_default = data.get('is_default')
+                address = data['address'],
+                detailed_address = data['detailed_address'],
+                zip_code = data['zip_code'],
+                is_default = data['is_default']
             ).save()
             return JsonResponse({"message": "ADDRESS_CREATED"}, status=200)
 
-        except IntegrityError:
+        except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
         except ValueError:
@@ -163,7 +163,7 @@ class AddressView(View):
         try:
             user_id = request.user.id
             data = json.loads(request.body)
-            target_address = Address.objects.get(id=data.get('address_id'))
+            target_address = Address.objects.get(id=data['address_id'])
 
             if not target_address:
                 return JsonResponse({'message': 'ADDRESS_DOES_NOT_EXIST'}, status=404)
@@ -171,17 +171,20 @@ class AddressView(View):
             if not target_address.user_id == user_id:
                 return JsonResponse({'message': 'NO_PERMISSION'}, status=403)
 
-            if data.get('is_default'):
+            if data['is_default']:
                 Address.objects.filter(user_id=user_id).update(is_default=0)
 
-            if data.get('address'): target_address.address                   = data.get('address')
-            if data.get('detailed_address'): target_address.detailed_address = data.get('detailed_address')
-            if data.get('zip_code'): target_address.zip_code                 = data.get('zip_code')
-            if data.get('is_default'): target_address.is_default             = data.get('is_default')
+            if data['address']: target_address.address                   = data['address']
+            if data['detailed_address']: target_address.detailed_address = data['detailed_address']
+            if data['zip_code']: target_address.zip_code                 = data['zip_code']
+            if data['is_default']: target_address.is_default             = data['is_default']
 
             target_address.save()
 
             return JsonResponse({'message': 'ADDRESS_UPDATED'}, status=200)
+
+        except KeyError:
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
         except Address.DoesNotExist:
             return JsonResponse({'message': 'ADDRESS_DOES_NOT_EXIST'}, status=404)
@@ -191,7 +194,7 @@ class AddressView(View):
         try:
             user_id = request.user.id
             data = json.loads(request.body)
-            target_address = Address.objects.get(id=data.get('address_id'))
+            target_address = Address.objects.get(id=data['address_id'])
 
             if not target_address:
                 return JsonResponse({'message': 'ADDRESS_DOES_NOT_EXIST'}, status=404)
@@ -201,6 +204,9 @@ class AddressView(View):
 
             target_address.delete()
             return JsonResponse({'message': 'ADDRESS_DELETED'}, status=202)
+
+        except KeyError:
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
         except Address.DoesNotExist:
             return JsonResponse({'message': 'ADDRESS_DOES_NOT_EXIST'}, status=404)
