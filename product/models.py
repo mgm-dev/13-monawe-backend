@@ -46,16 +46,16 @@ class Product(models.Model):
 
     def get_info(self):
         data = {
-            'id'             : self.id,
-            'name'           : self.name,
-            'price'          : int(self.price),
-            'subcategoryId'  : self.subcategory.id,
-            'subcategoryName': Subcategory.objects.get(id=self.subcategory_id).name,
-            'createdAt'      : self.created_at,
-            'company'        : self.company,
-            'description'    : self.description,
-            'salesAmount'    : self.sales_amount,
-            'imageUrl'       : self.thumb_nail
+            'id'              : self.id,
+            'name'            : self.name,
+            'price'           : int(self.price),
+            'subcategory_id'  : self.subcategory.id,
+            'subcategory_name': Subcategory.objects.get(id=self.subcategory_id).name,
+            'created_at'      : self.created_at,
+            'company'         : self.company,
+            'description'     : self.description,
+            'sales_amount'    : self.sales_amount,
+            'image_url'       : self.thumb_nail
         }
 
         return data

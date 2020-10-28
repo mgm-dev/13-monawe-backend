@@ -48,7 +48,7 @@ class ProductList(View):
 
             data = [product.get_info() for product in product_list]
 
-            return JsonResponse({ "numPages" : num_pages, "numProducts" : product_count, "data" : data}, status=200)
+            return JsonResponse({ "num_pages" : num_pages, "num_products" : product_count, "data" : data}, status=200)
 
         except ValueError:
             return JsonResponse({ "message" : "VALUE_ERROR"}, status=400)
@@ -90,9 +90,9 @@ class Detail(View):
             data = {
                 'productInfo': {
                     'name'       : product.name,
-                    'imageUrl'   : [product_image.image_url for product_image in product_image_list],
-                    'bodyColor'  : bodyColor,
-                    'inkColor'   : inkColor,
+                    'image_url'   : [product_image.image_url for product_image in product_image_list],
+                    'body_color'  : bodyColor,
+                    'ink_color'   : inkColor,
                     'thickness'  : [product_option.thickness.value for product_option in product_option_list],
                     'description': product.description,
                     'tag'        : [product_tag.tag.name for product_tag in product_tag_list],
