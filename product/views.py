@@ -78,7 +78,8 @@ class Detail(View):
                 } for product_option in product_option_list
             ]
             options   = [
-                {
+                {   
+                    'id'    : product_option.id,
                     'name'  : product_option.body_color.name + "/" 
                         + product_option.ink_color.name 
                         + "(" + product_option.thickness.value + "mm)" 
@@ -89,10 +90,11 @@ class Detail(View):
 
             data = {
                 'product_info': {
+                    'id'         : product.id,
                     'name'       : product.name,
-                    'image_url'   : [product_image.image_url for product_image in product_image_list],
-                    'body_color'  : bodyColor,
-                    'ink_color'   : inkColor,
+                    'image_url'  : [product_image.image_url for product_image in product_image_list],
+                    'body_color' : bodyColor,
+                    'ink_color'  : inkColor,
                     'thickness'  : [product_option.thickness.value for product_option in product_option_list],
                     'description': product.description,
                     'tag'        : [product_tag.tag.name for product_tag in product_tag_list],
