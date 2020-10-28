@@ -60,7 +60,7 @@ class ProductList(View):
 class Detail(View):
     def get(self, request, product_id):
         try:
-            product             = Product.objects.get(id=product_id)
+            product             = Product.objects.prefetch_related('productimage_set', 'productoption_set', 'producttag_set').get(id=product_id)
             product_image_list  = product.productimage_set.all()
             product_option_list = product.productoption_set.all()
             product_tag_list    = product.producttag_set.all()
