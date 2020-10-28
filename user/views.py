@@ -130,6 +130,10 @@ class AddressView(View):
         try:
             user_id = request.user.id
             data  = json.loads(request.body)
+
+            if data.get('is_default'):
+                Address.objects.filter(user_id=user_id).update(is_default=0)
+
             Address(
                 user_id = user_id,
                 address = data.get('address'),
@@ -166,6 +170,9 @@ class AddressView(View):
 
             if not target_address.user_id == user_id:
                 return JsonResponse({'message': 'NO_PERMISSION'}, status=403)
+
+            if data.get('is_default'):
+                Address.objects.filter(user_id=user_id).update(is_default=0)
 
             if data.get('address'): target_address.address                   = data.get('address')
             if data.get('detailed_address'): target_address.detailed_address = data.get('detailed_address')
