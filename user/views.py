@@ -55,9 +55,6 @@ class SignIn(View):
             data = json.loads(request.body)
             user = User.objects.get(account=data['account'])
 
-            if not user:
-                return JsonResponse({"message": "INVALID_USER"}, status=409)
-
             if bcrypt.checkpw(data['password'].encode('UTF-8'), user.password.encode('UTF-8')):
                 key       = my_settings.SECRET.get('JWT_KEY')
                 algorithm = my_settings.SECRET.get('JWT_ALGORITHM')
