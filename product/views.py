@@ -88,7 +88,7 @@ class Detail(View):
             ]
 
             data = {
-                'productInfo': {
+                'product_info': {
                     'name'       : product.name,
                     'image_url'   : [product_image.image_url for product_image in product_image_list],
                     'body_color'  : bodyColor,
