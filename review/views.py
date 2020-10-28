@@ -54,19 +54,21 @@ class Review(View):
 
     def patch(self, request):
         data = json.loads(request.body)
-        target_review = ProductReview.objects.get(id=data['review_id'])
+        target_review = ProductReview.objects.get(id=data.get('review_id'))
 
-        if not ProductReview.objects.filter(id=target_review.id).exists():
+        if not target_review:
             return JsonResponse({'MESSAGE': 'REVIEW_DOES_NOT_EXIST'}, status=404)
-        else:
-            ProductReview.objects.filter(id=target_review.id).update(
-                rating=data['rating'],
-                title=data['title'],
-                content=data['content'],
-                image_url=data['image_url'],
-                updated_at=timezone.now(),
-            )
-            return JsonResponse({'MESSAGE': 'REVIEW_UPDATED'}, status=201)
+
+        if data.get('rating'): target_review.rating       = data.get('rating')
+        if data.get('title'): target_review.title         = data.get('title')
+        if data.get('content'): target_review.content     = data.get('content')
+        if data.get('image_url'): target_review.image_url = data.get('image_url')
+
+        target_review.updated_at = timezone.now()
+
+        target_review.save()
+
+        return JsonResponse({'MESSAGE': 'REVIEW_UPDATED'}, status=201)
 
     def delete(self, request):
         data = json.loads(request.body)
