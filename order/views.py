@@ -29,7 +29,7 @@ class CartView(View):
         if OrderProduct.objects.filter(order = target_cart, product_option = target_product_option).exists():
 
             return JsonResponse(
-                {'MESSAGE': 'This product already exists in the cart'},
+                {'message': 'ALREADY_EXISTS'},
                 status = 404
             )
 
@@ -42,59 +42,91 @@ class CartView(View):
             ).save()
 
             return JsonResponse(
-                {'MESSAGE': 'PRODUCT ADDED'},
+                {'message': 'PRODUCT_ADDED'},
                 status = 201
             )
-
+    #프로덕트 설명이 없음.. 다 풀어서 보내기
     def get(self, request):
         data             = json.loads(request.body)
-        products_in_cart = [product for product in Order.objects.get(
+        products_in_cart = [products for products in Order.objects.get(
                            user = data['user_id'], order_status = 1
                            ).orderproduct_set.all().values()]
 
+        target_order = Order.objects.get(user = data['user_id'], order_status = 1)
+        
+        product_in_cart        = [products['product_id'] for products in products_in_cart]
+        product_option_in_cart = [products["product_option_id"] for products in products_in_cart]
+
+        product_name_list       = [Product.objects.get(id = p_id).name for p_id in product_in_cart]
+        product_thumbnail_list  = [Product.objects.get(id = p_id).thumb_nail for p_id in product_in_cart]
+        product_bodycolor_list  = [ProductOption.objects.get(id = p_id).body_color.name for p_id in product_option_in_cart]
+        # product_inkcolor_list   = [ProductOption.objects.get(id = p_id).ink_color.name for p_id in product_option_in_cart]
+        # product_thickness_list  = [ProductOption.objects.get(id = p_id).thickness.value for p_id in product_option_in_cart]
+        product_price_list      = [Product.objects.get(id = p_id).price for p_id in product_in_cart]
+        product_plusprice_list  = [ProductOption.objects.get(id = p_id).plus_price for p_id in product_option_in_cart]
+        product_company_list    = [Product.objects.get(id = p_id).company for p_id in product_in_cart]
+
+        list_per_product = []
+
+        for i in range(0, len(products_in_cart)):
+            product_detail = {
+                "product_option_id"    : product_option_in_cart[i],
+                "product_name"         : product_name_list[i],
+                "product_thumbnail"    : product_thumbnail_list[i],
+                "product_bodycolor"    : product_bodycolor_list[i], 
+                # "product_inkcolor"     : product_inkcolor_list[i],
+                # "product_thickness"    : product_thickness_list[i], 
+                "product_price"        : product_price_list[i] + product_plusprice_list[i],
+                "product_company"      : product_company_list[i],
+                "product_amount"       : OrderProduct.objects.get(
+                    product_option = product_option_in_cart[i], 
+                    order = target_order
+                    ).product_amount
+            }
+            list_per_product.append(product_detail)
+
         return JsonResponse(
-            {'PRODUCTS LIST': products_in_cart},
+            {'product_detail' : list_per_product},
             status = 200
         )
-
     # change the total amount
-    def patch(self, request):
+    def patch(self, request, product_option_id):
         data            = json.loads(request.body)
         target_cart     = Order.objects.get(user = data['user_id'], order_status = 1)
-        product_in_cart = OrderProduct.objects.filter(product_option = data['product_option_id'], order = target_cart)
+        product_in_cart = OrderProduct.objects.filter(product_option = product_option_id, order = target_cart)
 
         product_in_cart.update(product_amount = data['amount'])
 
         return JsonResponse(
-            {'MESSAGE':'AMOUNT CHANGED'},
+            {'message':'AMOUNT_CHANGED'},
             status = 200
         )
 
-    def delete(self, request):
-        data = json.loads(request.body)
-        OrderProduct.objects.get(id = data['order_product_id']).delete()
+    def delete(self, request, product_option_id):
+        data            = json.loads(request.body)
+        target_cart     = Order.objects.get(user = data['user_id'], order_status = 1)
+        OrderProduct.objects.filter(product_option = product_option_id, order = target_cart).delete()
 
         return JsonResponse(
-            {'MESSAGE': 'PRODUCT DELETED'},
+            {'message': 'DELETED'},
             status=204
         )
 
 
 class CheckoutView(View):
-    # when a user places an order
-    def patch(self, request):  # update values which are NULL
-        data             = json.loads(request.body)
-        order_status     = OrderStatus.objects.get(id = 2)
+    # when a user places an orderfilter
+    def patch(self, request, order_id):
         delivery_address = Address.objects.get(id = data['address_id'])
+        order_status     = 2
 
-        target_cart                 = Order.objects.get(id = data['order_id'])
+        target_cart                 = Order.objects.get(id = order_id)
         target_cart.address         = delivery_address
         target_cart.order_request   = data['request']
         target_cart.order_status    = order_status
         target_cart.save()
 
         return JsonResponse(
-            {'MESSAGE': 'ORDERED'},
+            {'message': 'ORDERED'},
             status=200
         )
 
@@ -106,49 +138,79 @@ class ShowOrdersView(View):
         all_orders      = [order for order in Order.objects.filter(user = data['user_id']).values()]
 
         return JsonResponse(
-            {'ORDERS LIST': all_orders},
+            {'order_list': all_orders},
             status = 200
         )
 
+
 class DetailOrderView(View):
+
     def get(self, request, order_id):
         ordered_products   = [product for product in OrderProduct.objects.filter(order = order_id).values()]
 
         return JsonResponse(
-            {'PRODUCTS LIST':ordered_products},
+            {'product_list':ordered_products},
             status = 200
         )
 
 
 class WishView(View):
+
     def post(self, request):
         data            = json.loads(request.body)
 
-        WishProduct(
-            user_id    = data['user_id'],
-            product_id = data['product_id']
-        ).save()
+        if WishProduct.objects.filter(user = data['user_id'], product = data['product_id']).exists():
+            return JsonResponse(
+                {'message': 'The product already exists in the wishlist'},
+                status = 404
+            )
 
-        return JsonResponse(
-            {'MESSAGE':'Added to the wishlist'},
-            status = 201
-        )
+        else:
+            WishProduct(
+                user_id    = data['user_id'],
+                product_id = data['product_id']
+            ).save()
+
+            return JsonResponse(
+                {'message':'ADDED_TO_WISHLIST'},
+                status = 201
+            )
 
     def get(self, request):
         data            = json.loads(request.body)
         wish_products   = [product for product in WishProduct.objects.filter(user = data['user_id']).values()]
 
+        wish_product = [products['product_id'] for products in wish_products]
+
+        product_name_list = [Product.objects.get(id = p_id).name for p_id in wish_product]
+        product_thumbnail_list = [Product.objects.get(id = p_id).thumb_nail for p_id in wish_product]
+        product_price_list = [Product.objects.get(id = p_id).price for p_id in wish_product]
+        product_company_list = [Product.objects.get(id = p_id).company for p_id in wish_product]
+
+        list_per_product = []
+
+        for i in range(0, len(wish_products)):
+            product_detail = {
+                "product_id"    : wish_product[i],
+                "product_name"  : product_name_list[i],
+                "product_thumbnail" : product_thumbnail_list[i],
+                "product_price" : product_price_list[i],
+                "product_company" : product_company_list[i]
+            }
+
+            list_per_product.append(product_detail)
+
         return JsonResponse(
-            {'WISH LIST': wish_products},
+            {'wish_list': list_per_product},
             status = 200
         )
     
-    def delete(self, request):
+    def delete(self, request, product_id):
         data = json.loads(request.body)
-        WishProduct.objects.get(user = data['user_id'], product = data['product_id']).delete()
+        WishProduct.objects.get(user = data['user_id'], product = product_id).delete()
 
         return JsonResponse(
-            {'MESSAGE': 'PRODUCT DELETED'},
+            {'message': 'DELETED'},
             status = 204
         )
 
