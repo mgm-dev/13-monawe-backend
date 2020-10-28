@@ -27,7 +27,7 @@ class SignUp(View):
             password       = data['password'].encode('utf-8')
             password_crypt = bcrypt.hashpw(password, bcrypt.gensalt()).decode('utf-8')
 
-            date_string = data['dateOfBirth']
+            date_string = data['date_of_birth']
             date = datetime.strptime(date_string, '%Y%m%d').strftime('%Y-%m-%d')
 
             User(
