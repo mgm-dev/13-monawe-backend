@@ -99,13 +99,18 @@ class CartView(View):
         data            = json.loads(request.body)
         user_id         = request.user.id
         target_cart     = Order.objects.get(user = user_id, order_status = 1)
-        product_in_cart = OrderProduct.objects.filter(product_option = product_option_id, order = target_cart)
+        target_product  = ProductOption.objects.get(id = product_option_id)
+        product_in_cart = OrderProduct.objects.get(product_option = product_option_id, order = target_cart)
 
-        product_in_cart.update(product_amount = data['amount'])
+        product_price   = target_product.plus_price + Product.objects.get(id = target_product.product_id).price
+
+        product_in_cart.product_amount = data['amount']
+
+        new_price = product_in_cart.product_amount * product_price
 
         return JsonResponse(
             {'message':'AMOUNT_CHANGED',
-            'total  _price':product_in_cart.product_amount * product_in_cart.price},
+            'total_price': new_price},
             status = 200
         )
 
@@ -276,7 +281,7 @@ class RecentlyViewedView(View):
         ).save()
 
         return JsonResponse(
-            {'MESSAGE':'Added to the viewed list'},
+            {'MESSAGE':'ADDED_TO_VIEWED_LIST'},
             status = 200)
 
     @utils.signin_decorator
