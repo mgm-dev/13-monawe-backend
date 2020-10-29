@@ -12,7 +12,7 @@ from django.utils           import timezone
 from user.models            import User
 from product.models         import Product
 from review.models          import ProductReview
-
+from django.db.models import Avg
 
 class Review(View):
     def get(self, request):
@@ -22,18 +22,24 @@ class Review(View):
             review_id = request.GET.get('review_id', None)
 
             if product_id:
-                review_data = ProductReview.objects.filter(product_id=product_id).values()
-                review_list = [review for review in review_data]
+                review_data = ProductReview.objects.filter(product_id=product_id)
+                review_list = [review for review in review_data.values()]
+                average = review_data.aggregate(Avg('rating'))
+
             elif user_id:
-                review_data = ProductReview.objects.filter(user_id=user_id).values()
-                review_list = [review for review in review_data]
+                review_data = ProductReview.objects.filter(user_id=user_id)
+                review_list = [review for review in review_data.values()]
+                average = review_data.aggregate(Avg('rating'))
             elif review_id:
-                review_data = ProductReview.objects.filter(id=review_id).values()
-                review_list = [review for review in review_data]
+                review_data = ProductReview.objects.filter(id=review_id)
+                review_list = [review for review in review_data.values()]
+                average = review_data.aggregate(Avg('rating'))
                 if len(review_list) == 0:
                     return JsonResponse({'message': 'REVIEW_DOES_NOT_EXIST'}, status=404)
 
-            return JsonResponse({'data': review_list}, status=200)
+            average_round = (average['rating__avg'] * 2) / 2
+
+            return JsonResponse({'data': review_list, 'average_rating' : average_round}, status=200)
 
         except ValueError:
             return JsonResponse({'message': 'VALUE_ERROR'}, status=400)
