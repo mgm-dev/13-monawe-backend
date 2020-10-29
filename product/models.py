@@ -1,6 +1,6 @@
-from django.db import models
-
 # autopep8: off
+from django.db   import models
+from user.models import User
 
 # product heirarchy
 class Field(models.Model):
@@ -42,6 +42,23 @@ class Product(models.Model):
     updated_at   = models.DateField(auto_now=False)
     description  = models.TextField(null=True)
     sales_amount = models.IntegerField(null=True)
+    thumb_nail   = models.URLField(max_length=200, null=True)
+
+    def get_info(self):
+        data = {
+            'id'              : self.id,
+            'name'            : self.name,
+            'price'           : int(self.price),
+            'subcategory_id'  : self.subcategory.id,
+            'subcategory_name': Subcategory.objects.get(id=self.subcategory_id).name,
+            'created_at'      : self.created_at,
+            'company'         : self.company,
+            'description'     : self.description,
+            'sales_amount'    : self.sales_amount,
+            'image_url'       : self.thumb_nail
+        }
+
+        return data
 
     def __str__(self):
         return self.name
@@ -92,7 +109,6 @@ class ProductOption(models.Model):
 
     class Meta:
         db_table = 'product_options'
-
 
 # product tags
 
