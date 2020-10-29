@@ -1,5 +1,5 @@
 from django.urls import path
-from order.views import CartView, CheckoutView, ShowOrdersView, DetailOrderView, WishView
+from order.views import CartView, CheckoutView, ShowOrdersView, DetailOrderView, WishView, RecentlyViewedView
 
 
 urlpatterns = [
@@ -10,5 +10,5 @@ urlpatterns = [
     path('/purchase/detail/<int:order_id>',  DetailOrderView.as_view()),
     path('/wishlist',                        WishView.as_view()),
     path('/wishlist/<int:product_id>',       WishView.as_view()),
-    # path('recent',                          RecentlyViewedView.as_view())
+    path('recent',                           RecentlyViewedView.as_view())
 ]

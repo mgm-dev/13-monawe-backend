@@ -76,7 +76,11 @@ class CartView(View):
                 "product_amount"       : OrderProduct.objects.get(
                                          product_option = product_option_in_cart[i], 
                                          order          = target_order
-                                         ).product_amount
+                                         ).product_amount,
+                "total_price"          : (product_price_list[i] + product_plusprice_list[i]) * (OrderProduct.objects.get(
+                                         product_option = product_option_in_cart[i], 
+                                         order          = target_order
+                                         ).product_amount)
             }
             list_per_product.append(product_detail)
 
@@ -241,27 +245,27 @@ class WishView(View):
         )
 
 
-# class RecentlyViewedView(View):
-#     def post(self, request):
-#         data            = json.loads(request.body)
-#         view_user       = User.objects.get(id = data['user_id'])
-#         viewed_product  = Product.objects.get(id = data['product_id'])
+class RecentlyViewedView(View):
+    def post(self, request):
+        data            = json.loads(request.body)
+        view_user       = User.objects.get(id = data['user_id'])
+        viewed_product  = Product.objects.get(id = data['product_id'])
 
-#         ViewedProduct(
-#             user    = view_user,
-#             product = viewed_product
-#         ).save()
+        ViewedProduct(
+            user    = view_user,
+            product = viewed_product
+        ).save()
 
-#         return JsonResponse(
-#             {'MESSAGE':'Added to the viewed list'},
-#             status = 200)
+        return JsonResponse(
+            {'MESSAGE':'Added to the viewed list'},
+            status = 200)
 
-#     def get(self, request):
-#         data            = json.loads(request.body)
-#         viewed_products = ViewedProduct.objects.filter(user = data['user_id']).values()
-#         product_list    = [product for product in viewed_products]
+    def get(self, request):
+        data            = json.loads(request.body)
+        viewed_products = ViewedProduct.objects.filter(user = data['user_id']).values()
+        product_list    = [product for product in viewed_products]
 
-#         return JsonResponse(
-#             {'VIEWED LIST': product_list},
-#             status = 200
-#         )
+        return JsonResponse(
+            {'VIEWED LIST': product_list},
+            status = 200
+        )
