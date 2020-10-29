@@ -14,7 +14,7 @@ from user.models            import User
 def signin_decorator(func):
     def wrapper(self, request, *args, **kwargs):
         try:
-            token     = request.headers.get('Auth', None)
+            token     = request.headers.get('Authentication', None)
             key       = my_settings.SECRET.get('JWT_KEY')
             algorithm = my_settings.SECRET.get('JWT_ALGORITHM')
 
