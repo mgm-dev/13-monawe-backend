@@ -152,7 +152,7 @@ class AddressView(View):
     def get(self, request):
         try:
             user_id = request.user.id
-            data = [address for address in Address.objects.filter(user_id=user_id).values()]
+            data = [address for address in Address.objects.filter(user_id=user_id).order_by('-is_default').values()]
             return JsonResponse({"data" : data}, status=200)
         except Address.DoesNotExist:
             return JsonResponse({'message': 'ADDRESS_DOES_NOT_EXIST'}, status=404)
