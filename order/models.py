@@ -42,6 +42,18 @@ class DeliveryInfo(models.Model):
     class Meta():
         db_table = 'delivery_infos'
 
+# Review
+
+# class ProductReview(models.Model):
+#     user       = models.ForeignKey(User, on_delete=models.CASCADE)
+#     product    = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     rating     = models.DecimalField(max_digits=2, decimal_places=1)
+#     title      = models.CharField(max_length=45)
+#     content    = models.CharField(max_length=200)
+#     created_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+#     updated_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+#     image_url  = models.URLField(max_length=200, null=True)
+
 # # Review
 
 # class ProductReview(models.Model):

@@ -8,17 +8,20 @@ from order.models   import OrderStatus, Order, OrderProduct, WishProduct, Viewed
 from user.models    import User, Address
 from product.models import Product, ProductOption
 
+import utils
+
 # Create your views here.
 
-# Order
+# Add to cart
 class CartView(View):
     # add the product into the cart
+    @utils.signin_decorator
     def post(self, request):
         data = json.loads(request.body)
-
+        user_id = request.user.id
         chosen_products = data['chosen_product']
 
-        target_cart, flag = Order.objects.get_or_create(user_id = 1, order_status_id = 1)
+        target_cart, flag = Order.objects.get_or_create(user_id = user_id, order_status_id = 1)
 
         target_options = [chosen_products[i]["product_option_id"] for i in range(0, len(chosen_products))]
 
@@ -46,12 +49,12 @@ class CartView(View):
             status=201
         )
 
-
+    @utils.signin_decorator
     def get(self, request):
-        # data             = json.loads(request.body)
-        target_order     = Order.objects.get(user = 1, order_status = 1)
+        user_id = request.user.id
+        target_order     = Order.objects.get(user = user_id, order_status = 1)
         products_in_cart = [products for products in Order.objects.get(
-                           user = 1, order_status = 1
+                           user = user_id, order_status = 1
                            ).orderproduct_set.all().values()]
         
         product_in_cart        = [products['product_id'] for products in products_in_cart]
@@ -89,9 +92,11 @@ class CartView(View):
             status = 200
         )
     # change the total amount
+    @utils.signin_decorator
     def patch(self, request, product_option_id):
         data            = json.loads(request.body)
-        target_cart     = Order.objects.get(user = 1, order_status = 1)
+        user_id = request.user.id
+        target_cart     = Order.objects.get(user = user_id, order_status = 1)
         product_in_cart = OrderProduct.objects.filter(product_option = product_option_id, order = target_cart)
 
         product_in_cart.update(product_amount = data['amount'])
@@ -101,14 +106,15 @@ class CartView(View):
             status = 200
         )
 
+    @utils.signin_decorator
     def delete(self, request, product_option_id):
-        # data            = json.loads(request.body)
-        target_cart     = Order.objects.get(user = 1, order_status = 1)
+        user_id = request.user.id
+        target_cart     = Order.objects.get(user = user_id, order_status = 1)
         OrderProduct.objects.filter(product_option = product_option_id, order = target_cart).delete()
 
-        target_order     = Order.objects.get(user = 1, order_status = 1)
+        target_order     = Order.objects.get(user = user_id, order_status = 1)
         products_in_cart = [products for products in Order.objects.get(
-                           user = 1, order_status = 1
+                           user = user_id, order_status = 1
                            ).orderproduct_set.all().values()]
         
         product_in_cart        = [products['product_id'] for products in products_in_cart]
@@ -161,12 +167,14 @@ class CheckoutView(View):
             status=200
         )
 
+# class ReviewUploadView(View):
 
 class ShowOrdersView(View):
-
+    @utils.signin_decorator
     def get(self, request):
         data            = json.loads(request.body)
-        all_orders      = [order for order in Order.objects.filter(user = data['user_id']).values()]
+        user_id = request.user.id
+        all_orders      = [order for order in Order.objects.filter(user = user_id).values()]
 
         return JsonResponse(
             {'order_list': all_orders},
@@ -184,13 +192,18 @@ class DetailOrderView(View):
             status = 200
         )
 
+#         return JsonResponse(
+#             {'REVIEWS': review_list},
+#             status = 200
+#         )
 
 class WishView(View):
-
+    @utils.signin_decorator
     def post(self, request):
         data = json.loads(request.body)
+        user_id = request.user.id
 
-        if WishProduct.objects.filter(user = data['user_id'], product = data['product_id']).exists():
+        if WishProduct.objects.filter(user = user_id, product = data['product_id']).exists():
 
             return JsonResponse(
                 {'message': 'ALREADY_EXISTS'},
@@ -199,7 +212,7 @@ class WishView(View):
 
         else:
             WishProduct(
-                user_id    = data['user_id'],
+                user_id    = user_id,
                 product_id = data['product_id']
             ).save()
 
@@ -207,10 +220,11 @@ class WishView(View):
                 {'message':'ADDED_TO_WISHLIST'},
                 status = 201
             )
-
+    @utils.signin_decorator
     def get(self, request):
-        data            = json.loads(request.body)
-        wish_products   = [product for product in WishProduct.objects.filter(user = data['user_id']).values()]
+        
+        user_id = request.user.id
+        wish_products   = [product for product in WishProduct.objects.filter(user = user_id).values()]
         wish_product    = [products['product_id'] for products in wish_products]            
 
         product_name_list       = [Product.objects.get(id = p_id).name for p_id in wish_product]
@@ -234,10 +248,11 @@ class WishView(View):
             {'wish_list': list_per_product},
             status = 200
         )
-    
+    @utils.signin_decorator
     def delete(self, request, product_id):
         data = json.loads(request.body)
-        WishProduct.objects.get(user = data['user_id'], product = product_id).delete()
+        user_id = request.user.id
+        WishProduct.objects.get(user = user_id, product = product_id).delete()
 
         return JsonResponse(
             {'message': 'DELETED'},
