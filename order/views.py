@@ -188,10 +188,6 @@ class DetailOrderView(View):
             status = 200
         )
 
-#         return JsonResponse(
-#             {'REVIEWS': review_list},
-#             status = 200
-#         )
 
 class WishView(View):
     @utils.signin_decorator
@@ -216,6 +212,7 @@ class WishView(View):
                 {'message':'ADDED_TO_WISHLIST'},
                 status = 201
             )
+
     @utils.signin_decorator
     def get(self, request):
         
@@ -244,6 +241,7 @@ class WishView(View):
             {'wish_list': list_per_product},
             status = 200
         )
+
     @utils.signin_decorator
     def delete(self, request, product_id):
         data = json.loads(request.body)
@@ -254,29 +252,3 @@ class WishView(View):
             {'message': 'DELETED'},
             status = 204
         )
-
-
-# class RecentlyViewedView(View):
-#     def post(self, request):
-#         data            = json.loads(request.body)
-#         view_user       = User.objects.get(id = data['user_id'])
-#         viewed_product  = Product.objects.get(id = data['product_id'])
-
-#         ViewedProduct(
-#             user    = view_user,
-#             product = viewed_product
-#         ).save()
-
-#         return JsonResponse(
-#             {'MESSAGE':'Added to the viewed list'},
-#             status = 200)
-
-#     def get(self, request):
-#         data            = json.loads(request.body)
-#         viewed_products = ViewedProduct.objects.filter(user = data['user_id']).values()
-#         product_list    = [product for product in viewed_products]
-
-#         return JsonResponse(
-#             {'VIEWED LIST': product_list},
-#             status = 200
-#         )
