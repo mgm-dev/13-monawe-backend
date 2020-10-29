@@ -1,4 +1,5 @@
 import json
+import utils
 
 from django.http    import JsonResponse
 from django.views   import View
@@ -8,13 +9,11 @@ from order.models   import OrderStatus, Order, OrderProduct, WishProduct, Viewed
 from user.models    import User, Address
 from product.models import Product, ProductOption
 
-import utils
-
 # Create your views here.
 
 # Add to cart
 class CartView(View):
-    # add the product into the cart
+
     @utils.signin_decorator
     def post(self, request):
         data            = json.loads(request.body)
@@ -26,9 +25,10 @@ class CartView(View):
 
         for option in target_options:
             if OrderProduct.objects.filter(order = target_cart.id, product_option = option).exists():
+
                 return JsonResponse(
                     {'message':'ALREADY_EXISTS'},
-                    status=404)
+                    status=409)
 
         target_products = [ProductOption.objects.get(id = target_options[i]).product_id 
                           for i in range(0, len(target_options))]
@@ -69,22 +69,24 @@ class CartView(View):
 
         list_per_product = []
         for i in range(0, len(products_in_cart)):
+            product_price  = product_price_list[i] + product_plusprice_list[i]
+            product_amount = OrderProduct.objects.get(
+                             product_option = product_option_in_cart[i], 
+                             order          = target_order
+                             ).product_amount
+            total_price    = product_amount * product_price
+
             product_detail = {
                 "product_option_id"    : product_option_in_cart[i],
                 "product_name"         : product_name_list[i],
                 "product_thumbnail"    : product_thumbnail_list[i],
                 "product_bodycolor"    : product_bodycolor_list[i], 
-                "product_price"        : product_price_list[i] + product_plusprice_list[i],
+                "product_price"        : product_price,
                 "product_company"      : product_company_list[i],
-                "product_amount"       : OrderProduct.objects.get(
-                                         product_option = product_option_in_cart[i], 
-                                         order          = target_order
-                                         ).product_amount,
-                "total_price"          : (product_price_list[i] + product_plusprice_list[i]) * (OrderProduct.objects.get(
-                                         product_option = product_option_in_cart[i], 
-                                         order          = target_order
-                                         ).product_amount)
+                "product_amount"       : product_amount,
+                "total_price"          : total_price
             }
+
             list_per_product.append(product_detail)
 
         return JsonResponse(
@@ -102,7 +104,8 @@ class CartView(View):
         product_in_cart.update(product_amount = data['amount'])
 
         return JsonResponse(
-            {'message':'AMOUNT_CHANGED'},
+            {'message':'AMOUNT_CHANGED',
+            'total  _price':product_in_cart.product_amount * product_in_cart.price},
             status = 200
         )
 
@@ -150,7 +153,8 @@ class CartView(View):
             status=200
         )
 
-# 주문기능 구현 안함 T_T
+# 주문기능 구현x T_T
+
 # class CheckoutView(View):
 
 #     def patch(self, request, order_id):
@@ -167,7 +171,6 @@ class CartView(View):
 #             {'message': 'ORDERED'},
 #             status=200
 #         )
-
 
 # class ShowOrdersView(View):
 #     @utils.signin_decorator
@@ -200,9 +203,10 @@ class WishView(View):
         user_id = request.user.id
 
         if WishProduct.objects.filter(user = user_id, product = data['product_id']).exists():
+            WishProduct.objects.get(user = user_id, product = data['product_id']).delete()
 
             return JsonResponse(
-                {'message': 'ALREADY_EXISTS'},
+                {'message': 'REMOVED'},
                 status = 200
             )
 
@@ -216,10 +220,11 @@ class WishView(View):
                 {'message':'ADDED_TO_WISHLIST'},
                 status = 201
             )
+
     @utils.signin_decorator
     def get(self, request):
         
-        user_id = request.user.id
+        user_id         = request.user.id
         wish_products   = [product for product in WishProduct.objects.filter(user = user_id).values()]
         wish_product    = [products['product_id'] for products in wish_products]            
 
@@ -244,9 +249,10 @@ class WishView(View):
             {'wish_list': list_per_product},
             status = 200
         )
+
     @utils.signin_decorator
     def delete(self, request, product_id):
-        data = json.loads(request.body)
+        data    = json.loads(request.body)
         user_id = request.user.id
         WishProduct.objects.get(user = user_id, product = product_id).delete()
 
@@ -257,9 +263,11 @@ class WishView(View):
 
 
 class RecentlyViewedView(View):
+    @utils.signin_decorator
     def post(self, request):
         data            = json.loads(request.body)
-        view_user       = User.objects.get(id = data['user_id'])
+        user_id         = request.user.id
+        view_user       = User.objects.get(id = user_id)
         viewed_product  = Product.objects.get(id = data['product_id'])
 
         ViewedProduct(
@@ -271,12 +279,20 @@ class RecentlyViewedView(View):
             {'MESSAGE':'Added to the viewed list'},
             status = 200)
 
+    @utils.signin_decorator
     def get(self, request):
         data            = json.loads(request.body)
-        viewed_products = ViewedProduct.objects.filter(user = data['user_id']).values()
+        user_id         = request.user.id
+        viewed_products = ViewedProduct.objects.filter(user = user_id).values()
         product_list    = [product for product in viewed_products]
 
+        if len(product_list) > 10:
+            showing_list = product_list[len(product_list)-11:]
+
+        else: 
+            showing_list = product_list
+
         return JsonResponse(
-            {'VIEWED LIST': product_list},
+            {'VIEWED LIST': showing_list},
             status = 200
         )
