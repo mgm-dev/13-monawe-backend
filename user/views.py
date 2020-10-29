@@ -132,6 +132,8 @@ class AddressView(View):
                 Address.objects.filter(user_id=user_id).update(is_default=0)
 
             Address(
+                name = data['name'],
+                phone_number = data['phone_number'],
                 user_id = user_id,
                 address = data['address'],
                 detailed_address = data['detailed_address'],
@@ -171,10 +173,11 @@ class AddressView(View):
             if data['is_default']:
                 Address.objects.filter(user_id=user_id).update(is_default=0)
 
+            if data['name']: target_address.name                         = data['name']
             if data['address']: target_address.address                   = data['address']
             if data['detailed_address']: target_address.detailed_address = data['detailed_address']
             if data['zip_code']: target_address.zip_code                 = data['zip_code']
-            if data['is_default']: target_address.is_default             = data['is_default']
+            if "is_default" in data: target_address.is_default           = data['is_default']
 
             target_address.save()
 
