@@ -12,28 +12,29 @@ from django.utils           import timezone
 from user.models            import User
 from product.models         import Product
 from review.models          import ProductReview
-from django.db.models import Avg
+from django.db.models       import Avg
 
 class Review(View):
     def get(self, request):
         try:
             product_id = request.GET.get('product_id', None)
-            user_id = request.GET.get('user_id', None)
-            review_id = request.GET.get('review_id', None)
+            user_id    = request.GET.get('user_id', None)
+            review_id  = request.GET.get('review_id', None)
 
             if product_id:
                 review_data = ProductReview.objects.filter(product_id=product_id)
                 review_list = [review for review in review_data.values()]
-                average = review_data.aggregate(Avg('rating'))
+                average     = review_data.aggregate(Avg('rating'))
 
             elif user_id:
                 review_data = ProductReview.objects.filter(user_id=user_id)
                 review_list = [review for review in review_data.values()]
-                average = review_data.aggregate(Avg('rating'))
+                average     = review_data.aggregate(Avg('rating'))
             elif review_id:
                 review_data = ProductReview.objects.filter(id=review_id)
                 review_list = [review for review in review_data.values()]
-                average = review_data.aggregate(Avg('rating'))
+                average     = review_data.aggregate(Avg('rating'))
+
                 if len(review_list) == 0:
                     return JsonResponse({'message': 'REVIEW_DOES_NOT_EXIST'}, status=404)
 
@@ -55,12 +56,12 @@ class Review(View):
                 return JsonResponse({'message': 'ALREADY_WROTE_REVIEW'}, status=400)
             else:
                 ProductReview(
-                    user=User.objects.get(id=data['user_id']),
-                    product=target_product,
-                    rating=data['rating'],
-                    title=data['title'],
-                    content=data['content'],
-                    image_url=data['image_url'],
+                    user      = User.objects.get(id=data['user_id']),
+                    product   = target_product,
+                    rating    = data['rating'],
+                    title     = data['title'],
+                    content   = data['content'],
+                    image_url = data['image_url'],
                 ).save()
 
                 return JsonResponse({'message': 'REVIEW_UPLOADED'}, status=201)
