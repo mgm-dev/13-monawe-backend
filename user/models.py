@@ -21,6 +21,9 @@ class Address(models.Model):
     address          = models.CharField(max_length=200)
     detailed_address = models.CharField(max_length=200)
     zip_code         = models.IntegerField()
+    is_default       = models.SmallIntegerField(default = 0)
+    name             = models.CharField(max_length=50, default="아파트")
+    phone_number     = models.CharField(max_length=50, default="010-1234-5678")
 
     class Meta:
         db_table = "addresses"
