@@ -73,15 +73,15 @@ class Review(View):
     def patch(self, request):
         try:
             data = json.loads(request.body)
-            target_review = ProductReview.objects.get(id=data.get('review_id'))
+            target_review = ProductReview.objects.get(id=data['review_id'])
 
             if not target_review:
                 return JsonResponse({'message': 'REVIEW_DOES_NOT_EXIST'}, status=404)
 
-            if data.get('rating'): target_review.rating       = data.get('rating')
-            if data.get('title'): target_review.title         = data.get('title')
-            if data.get('content'): target_review.content     = data.get('content')
-            if data.get('image_url'): target_review.image_url = data.get('image_url')
+            if data['rating']: target_review.rating       = data['rating']
+            if data['title']: target_review.title         = data['title']
+            if data['content']: target_review.content     = data['content']
+            if data['image_url']: target_review.image_url = data['image_url']
 
             target_review.updated_at = timezone.now()
 
@@ -89,6 +89,8 @@ class Review(View):
 
             return JsonResponse({'message': 'REVIEW_UPDATED'}, status=201)
 
+        except KeyError:
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
         except ValueError:
             return JsonResponse({'message': 'VALUE_ERROR'}, status=400)
         except ProductReview.DoesNotExist:
