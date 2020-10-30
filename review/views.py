@@ -12,28 +12,35 @@ from django.utils           import timezone
 from user.models            import User
 from product.models         import Product
 from review.models          import ProductReview
-
+from django.db.models       import Avg
 
 class Review(View):
     def get(self, request):
         try:
             product_id = request.GET.get('product_id', None)
-            user_id = request.GET.get('user_id', None)
-            review_id = request.GET.get('review_id', None)
+            user_id    = request.GET.get('user_id', None)
+            review_id  = request.GET.get('review_id', None)
 
             if product_id:
-                review_data = ProductReview.objects.filter(product_id=product_id).values()
-                review_list = [review for review in review_data]
+                review_data = ProductReview.objects.filter(product_id=product_id)
+                review_list = [review for review in review_data.values()]
+                average     = review_data.aggregate(Avg('rating'))
+
             elif user_id:
-                review_data = ProductReview.objects.filter(user_id=user_id).values()
-                review_list = [review for review in review_data]
+                review_data = ProductReview.objects.filter(user_id=user_id)
+                review_list = [review for review in review_data.values()]
+                average     = review_data.aggregate(Avg('rating'))
             elif review_id:
-                review_data = ProductReview.objects.filter(id=review_id).values()
-                review_list = [review for review in review_data]
+                review_data = ProductReview.objects.filter(id=review_id)
+                review_list = [review for review in review_data.values()]
+                average     = review_data.aggregate(Avg('rating'))
+
                 if len(review_list) == 0:
                     return JsonResponse({'message': 'REVIEW_DOES_NOT_EXIST'}, status=404)
 
-            return JsonResponse({'data': review_list}, status=200)
+            average_round = (average['rating__avg'] * 2) / 2
+
+            return JsonResponse({'data': review_list, 'average_rating' : average_round}, status=200)
 
         except ValueError:
             return JsonResponse({'message': 'VALUE_ERROR'}, status=400)
@@ -49,12 +56,12 @@ class Review(View):
                 return JsonResponse({'message': 'ALREADY_WROTE_REVIEW'}, status=400)
             else:
                 ProductReview(
-                    user=User.objects.get(id=data['user_id']),
-                    product=target_product,
-                    rating=data['rating'],
-                    title=data['title'],
-                    content=data['content'],
-                    image_url=data['image_url'],
+                    user      = User.objects.get(id=data['user_id']),
+                    product   = target_product,
+                    rating    = data['rating'],
+                    title     = data['title'],
+                    content   = data['content'],
+                    image_url = data['image_url'],
                 ).save()
 
                 return JsonResponse({'message': 'REVIEW_UPLOADED'}, status=201)
@@ -67,15 +74,15 @@ class Review(View):
     def patch(self, request):
         try:
             data = json.loads(request.body)
-            target_review = ProductReview.objects.get(id=data.get('review_id'))
+            target_review = ProductReview.objects.get(id=data['review_id'])
 
             if not target_review:
                 return JsonResponse({'message': 'REVIEW_DOES_NOT_EXIST'}, status=404)
 
-            if data.get('rating'): target_review.rating       = data.get('rating')
-            if data.get('title'): target_review.title         = data.get('title')
-            if data.get('content'): target_review.content     = data.get('content')
-            if data.get('image_url'): target_review.image_url = data.get('image_url')
+            if data['rating']: target_review.rating       = data['rating']
+            if data['title']: target_review.title         = data['title']
+            if data['content']: target_review.content     = data['content']
+            if data['image_url']: target_review.image_url = data['image_url']
 
             target_review.updated_at = timezone.now()
 
@@ -83,6 +90,8 @@ class Review(View):
 
             return JsonResponse({'message': 'REVIEW_UPDATED'}, status=201)
 
+        except KeyError:
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
         except ValueError:
             return JsonResponse({'message': 'VALUE_ERROR'}, status=400)
         except ProductReview.DoesNotExist:
