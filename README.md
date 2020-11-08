@@ -75,7 +75,7 @@
 - 백경민: 
 - 이지영:
 - 민경민: [1차 프로젝트 후기](https://velog.io/@mgm-dev/%ED%9B%84%EA%B8%B0-wecode-1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9B%84%EA%B8%B0)
-- 황채영: 
+- 황채영: [1차 프로젝트 후기](https://velog.io/@hwangninaa/monawe-1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EB%A6%AC%EB%B7%B0)
 
 ### 주의사항
 - commit 작업 시, branch 확인!
